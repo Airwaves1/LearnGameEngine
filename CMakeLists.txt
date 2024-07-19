@@ -1,9 +1,10 @@
 cmake_minimum_required (VERSION 3.8)
 
-project(Sandbox)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+project(Sandbox)
 
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -Os -Wall")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Os -Wall")
@@ -11,9 +12,6 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Os -Wall")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build/bin)
-
-set(CMAKE_GENERATOR_PLATFORM x64)
-
 
 
 #资源文件配置
@@ -39,6 +37,8 @@ endif()
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Engine)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Engine/Core)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Engine/Platform)
+
+#添加第三方库头文件
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Engine/ThirdParty)
 
 #添加子目录

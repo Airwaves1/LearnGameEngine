@@ -7,7 +7,8 @@ extern Airawve::Application* Airawve::CreateApplication();
 
 int main(int argc, char** argv)
 {
-    // Airawve::Log::Init();
+    Airwave::Log::Init();
+    LOG_INFO("Airwave Engine Log System Initialized");
     auto app = Airawve::CreateApplication();
     app->Run();
     delete app;
