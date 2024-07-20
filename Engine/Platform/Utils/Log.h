@@ -3,7 +3,7 @@
 
 
 
-#include <memory>
+#include "Utils/Common.h"
 #include "spdlog/common.h"
 
 namespace Airwave {

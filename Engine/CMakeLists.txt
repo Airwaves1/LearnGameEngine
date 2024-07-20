@@ -5,10 +5,11 @@ project(AirwaveEngine)
 
 
 add_library(Engine
-"AirwaveEngine.cpp"
+    "AirwaveEngine.cpp"
 )
 
 target_link_libraries(Engine PUBLIC Core)
+
 
 # 添加子目录
 add_subdirectory(Core)

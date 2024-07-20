@@ -33,6 +33,9 @@ else()
 endif()
 
 
+#debug
+add_definitions(-DAW_ENABLE_ASSERTS)
+
 #添加头文件目录
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Engine)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Engine/Core)
@@ -40,6 +43,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Engine/Platform)
 
 #添加第三方库头文件
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Engine/ThirdParty)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Engine/ThirdParty/glfw/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Engine/ThirdParty/glad/include)
 
 #添加子目录
 add_subdirectory(Engine)

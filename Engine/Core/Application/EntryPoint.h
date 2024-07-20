@@ -3,13 +3,13 @@
 
 #ifdef AW_PLATFORM_WINDOWS
 
-extern Airawve::Application* Airawve::CreateApplication();
+extern Airwave::Application* Airwave::CreateApplication();
 
 int main(int argc, char** argv)
 {
     Airwave::Log::Init();
     LOG_INFO("Airwave Engine Log System Initialized");
-    auto app = Airawve::CreateApplication();
+    auto app = Airwave::CreateApplication();
     app->Run();
     delete app;
 
