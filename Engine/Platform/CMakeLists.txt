@@ -8,6 +8,8 @@ add_library(Platform
     "Window/Windows/WindowsWindow.cpp"
     "Window/Windows/WindowsInput.cpp"
 
+    "Graphics/OpenGL/OpenGLContext.cpp"
+
 )
 
 

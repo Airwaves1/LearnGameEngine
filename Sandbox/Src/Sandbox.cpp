@@ -1,11 +1,20 @@
 #include <AirwaveEngine.h>
 
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+#include <imgui.h>
+
+
 class ExampleLayer : public Airwave::Layer
 {
 public:
     ExampleLayer()
         : Layer("Example")
     {
+
     }
 
     void OnUpdate() override
@@ -25,6 +34,13 @@ public:
             }
         }
     }
+
+    void OnImGuiRender() override
+    {
+        ImGui::Begin("Test");
+        ImGui::Text("Hello World!");
+        ImGui::End();
+    }
 };
 
 class Sandbox : public Airwave::Application
@@ -32,9 +48,7 @@ class Sandbox : public Airwave::Application
 public:
     Sandbox()
     {
-        PushLayer(std::make_shared<ExampleLayer>());
-        // PushLayer(std::make_shared<Airwave::ImGuiLayer>());
-        
+        PushLayer(std::make_shared<ExampleLayer>());        
     }
 
     ~Sandbox()

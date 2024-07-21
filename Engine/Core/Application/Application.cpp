@@ -24,7 +24,12 @@ namespace Airwave
         s_Instance = this;
 
         m_Window = std::unique_ptr<Window>(Window::Create());
+        // 这里会设置m_Window里的std::function<void(Event&)>对象, 当接受Event时, 会调用Application::OnEvent函数
         m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
+
+        // Application应该自带ImGuiLayer, 这段代码应该放到引擎内部而不是User的Application派生类里
+        m_ImGuiLayer = std::make_shared<ImGuiLayer>();
+        m_LayerStack.PushOverlay(m_ImGuiLayer);
     }
 
     Application::~Application()
@@ -42,8 +47,10 @@ namespace Airwave
             for (std::shared_ptr<Layer> layer : m_LayerStack)
                 layer->OnUpdate();
 
-            // auto [x, y] = Input::GetMousePosition();
-            // LOG_TRACE("Mouse Position: {0}, {1}", x, y);
+            m_ImGuiLayer->Begin();
+            for (std::shared_ptr<Layer> layer : m_LayerStack)
+                layer->OnImGuiRender();
+            m_ImGuiLayer->End();
 
             m_Window->OnUpdate();
         }

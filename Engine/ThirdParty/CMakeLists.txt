@@ -17,7 +17,11 @@ add_subdirectory(glad)
 add_subdirectory(glm)
 option(GLM_ENABLE_CXX_17 "Enable C++ 17" ON)
 
+#imgui
+add_subdirectory(imgui)
+
 
 target_link_libraries(ThirdParty PUBLIC glfw)
 target_link_libraries(ThirdParty PUBLIC glad)
 target_link_libraries(ThirdParty PUBLIC glm)
+target_link_libraries(ThirdParty PUBLIC ImGui)

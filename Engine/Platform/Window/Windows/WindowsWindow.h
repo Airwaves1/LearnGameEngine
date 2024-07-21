@@ -2,6 +2,7 @@
 #define WINDOWSWINDOW_H
 
 #include "Window/Window.h"
+#include "Graphics/GraphicsContext.h"
 
 struct GLFWwindow;
 
@@ -32,6 +33,8 @@ namespace Airwave {
 
     private:
         GLFWwindow *m_Window;
+
+        GraphicsContext *m_Context;
 
         struct WindowData
         {

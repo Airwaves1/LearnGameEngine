@@ -4,7 +4,7 @@
 #include "Utils/Common.h"
 #include "Window/Window.h"
 #include "Base/LayerStack.h"
-#include "Window/Input.h"
+#include "ImGui/ImGuiLayer.h"
 namespace Airwave
 {
 
@@ -32,6 +32,7 @@ namespace Airwave
         bool OnWindowClose(WindowCloseEvent& e);
 
         std::unique_ptr<Window> m_Window;
+        std::shared_ptr<ImGuiLayer> m_ImGuiLayer;
 
         bool b_Running = true;
         LayerStack m_LayerStack;

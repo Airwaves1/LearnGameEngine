@@ -1,12 +1,13 @@
 #include "Window/Windows/WindowsWindow.h"
 #include "Utils/Common.h"
 
-#include <glad/glad.h>
-#include <glfw/glfw3.h>
-
 #include "Event/ApplicationEvent.h"
 #include "Event/KeyEvent.h"
 #include "Event/MouseEvent.h"
+
+#include <glfw/glfw3.h>
+#include "Graphics/OpenGL/OpenGLContext.h"
+
 
 namespace Airwave
 {
@@ -148,18 +149,8 @@ namespace Airwave
 
 
         // Load OpenGL functions using Glad
-        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-        {
-            LOG_ERROR("Failed to initialize Glad!");
-        }
-
-        LOG_INFO("OpenGL Info:");
-        const std::string vendor = (const char *)glGetString(GL_VENDOR);
-        const std::string renderer = (const char *)glGetString(GL_RENDERER);
-        const std::string version = (const char *)glGetString(GL_VERSION);
-        LOG_INFO("Vendor: {0}", vendor);
-        LOG_INFO("Renderer: {0}", renderer);
-        LOG_INFO("Version: {0}", version);
+        m_Context = new OpenGLContext(m_Window);
+        m_Context->Init();
 
     }
 
@@ -171,7 +162,7 @@ namespace Airwave
     void WindowsWindow::OnUpdate()
     {
         glfwPollEvents();
-        glfwSwapBuffers(m_Window);
+        m_Context->SwapBuffers();
     }
 
     void WindowsWindow::SetVSync(bool enabled)

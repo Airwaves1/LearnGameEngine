@@ -1,36 +1,36 @@
-// #ifndef IMGUI_LAYER_H
-// #define IMGUI_LAYER_H
+#ifndef IMGUI_LAYER_H
+#define IMGUI_LAYER_H
 
-// #include "Base/Layer.h"
-// #include "Event/Event.h"
+#include "Base/Layer.h"
+#include "Event/Event.h"
+#include "Event/KeyEvent.h"
+#include "Event/MouseEvent.h"
 
+namespace Airwave
+{
 
+    class ImGuiLayer : public Layer
+    {
 
-// namespace Airwave
-// {
+    public:
+        ImGuiLayer();
+        ~ImGuiLayer();
 
-//     class ImGuiLayer : public Layer
-//     {
+		void OnAttach() override; //当layer添加到layer stack的时候会调用此函数，相当于Init函数
+		void OnDetach() override; //当layer从layer stack移除的时候会调用此函数，相当于Shutdown函数
+		void OnImGuiRender() override; //当layer从layer stack移除的时候会调用此函数，相当于Shutdown函数
+		void OnEvent(Event&) override;
 
-//     public:
-//         ImGuiLayer();
-//         ~ImGuiLayer();
+        void Begin();
+        void End();
 
-// 		void OnAttach() override; //当layer添加到layer stack的时候会调用此函数，相当于Init函数
-// 		void OnDetach() override; //当layer从layer stack移除的时候会调用此函数，相当于Shutdown函数
-// 		void OnImGuiRender() override; //当layer从layer stack移除的时候会调用此函数，相当于Shutdown函数
-// 		void OnEvent(Event&) override;
+    private:
 
-//         void Begin();
-//         void End();
+    private:
+        float m_Time = 0.0f;
 
-//     private:
+    };
 
-//     private:
-//         float m_Time = 0.0f;
+}
 
-//     };
-
-// }
-
-// #endif // IMGUI_LAYER_H
+#endif // IMGUI_LAYER_H

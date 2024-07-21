@@ -7,7 +7,6 @@ add_library(Core
 
     "Application/Application.cpp"
 
-    "ImGui/ImGuiBuild.cpp"
     "ImGui/ImGuiLayer.cpp"
 )
 

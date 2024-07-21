@@ -29,10 +29,8 @@
 
 #ifdef AW_ENABLE_ASSERTS
     #define AIRWAVE_ASSERT(x, ...) if(!x) { LOG_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); }
-    #define AIRWAVE_CORE_ASSERT(x, ...) if(!x) { LOG_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); }
 #else
     #define AIRWAVE_ASSERT(x, ...)
-    #define AIRWAVE_CORE_ASSERT(x, ...)
 #endif // AW_ENABLE_ASSERTS
 
 #endif //COMMON_H
