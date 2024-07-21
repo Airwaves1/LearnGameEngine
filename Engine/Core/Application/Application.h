@@ -4,6 +4,7 @@
 #include "Utils/Common.h"
 #include "Window/Window.h"
 #include "Base/LayerStack.h"
+#include "Window/Input.h"
 namespace Airwave
 {
 
@@ -23,6 +24,10 @@ namespace Airwave
         void PushLayer(std::shared_ptr<Layer> layer);
         std::shared_ptr<Layer> PopLayer();
 
+        static Application& Get();
+
+        Window& GetWindow() { return *m_Window; }
+
     private:
         bool OnWindowClose(WindowCloseEvent& e);
 
@@ -30,6 +35,9 @@ namespace Airwave
 
         bool b_Running = true;
         LayerStack m_LayerStack;
+
+    private:
+        static Application* s_Instance;
     };
 
     // To be defined in CLIENT

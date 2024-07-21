@@ -5,7 +5,9 @@ add_library(Platform
     "Utils/Log.cpp"
 
     "Window/Window.cpp"
-    "Window/WindowsWindow.cpp"
+    "Window/Windows/WindowsWindow.cpp"
+    "Window/Windows/WindowsInput.cpp"
+
 )
 
 

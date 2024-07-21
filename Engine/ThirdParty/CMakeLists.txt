@@ -13,6 +13,11 @@ add_subdirectory(glfw)
 #glad
 add_subdirectory(glad)
 
+#glm
+add_subdirectory(glm)
+option(GLM_ENABLE_CXX_17 "Enable C++ 17" ON)
+
 
 target_link_libraries(ThirdParty PUBLIC glfw)
 target_link_libraries(ThirdParty PUBLIC glad)
+target_link_libraries(ThirdParty PUBLIC glm)

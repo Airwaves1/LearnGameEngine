@@ -45,6 +45,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Engine/Platform)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Engine/ThirdParty)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Engine/ThirdParty/glfw/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Engine/ThirdParty/glad/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Engine/ThirdParty/imgui)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Engine/ThirdParty/imgui/backends)
 
 #添加子目录
 add_subdirectory(Engine)

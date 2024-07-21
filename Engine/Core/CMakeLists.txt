@@ -6,6 +6,9 @@ add_library(Core
     "Base/LayerStack.cpp"
 
     "Application/Application.cpp"
+
+    "ImGui/ImGuiBuild.cpp"
+    "ImGui/ImGuiLayer.cpp"
 )
 
 target_link_libraries(Core PRIVATE Platform)
