@@ -26,9 +26,9 @@ namespace Airwave
         std::string renderer = (char *)glGetString(GL_RENDERER);
         std::string version = (char *)glGetString(GL_VERSION);
 
-        LOG_INFO("  Vendor: {0}", vendor);
-        LOG_INFO("  Renderer: {0}", renderer);
-        LOG_INFO("  Version: {0}", version);
+        LOG_INFO("Vendor: {0}", vendor);
+        LOG_INFO("Renderer: {0}", renderer);
+        LOG_INFO("Version: {0}", version);
 
     }
 

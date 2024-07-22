@@ -2,7 +2,7 @@
 #define WINDOWSWINDOW_H
 
 #include "Window/Window.h"
-#include "Graphics/GraphicsContext.h"
+#include "Renderer/GraphicsContext.h"
 
 struct GLFWwindow;
 

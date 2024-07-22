@@ -7,7 +7,14 @@ add_library(Core
 
     "Application/Application.cpp"
 
+    "Renderer/RendererAPI.cpp"
+    "Renderer/VertexArray.cpp"
+    "Renderer/Buffer.cpp"
+    "Renderer/Shader.cpp"
+    
     "ImGui/ImGuiLayer.cpp"
+
+
 )
 
 target_link_libraries(Core PRIVATE Platform)
