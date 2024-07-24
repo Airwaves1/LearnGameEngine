@@ -12,7 +12,7 @@ namespace Airwave
     VertexBuffer *VertexBuffer::Create(float *vertices, uint32_t size)
     {
         VertexBuffer *buffer = nullptr;
-        switch (RendererAPI::GetAPI())
+        switch (RendererAPI::GetAPIType())
         {
         case RendererAPI::APIType::None:
         {
@@ -39,7 +39,7 @@ namespace Airwave
     VertexBuffer *VertexBuffer::Create(uint32_t size)
     {
         VertexBuffer *buffer = nullptr;
-        switch (RendererAPI::GetAPI())
+        switch (RendererAPI::GetAPIType())
         {
         case RendererAPI::APIType::None:
         {
@@ -66,7 +66,7 @@ namespace Airwave
     IndexBuffer *IndexBuffer::Create(uint32_t *indices, uint32_t count)
     {
         IndexBuffer *buffer = nullptr;
-        switch (RendererAPI::GetAPI())
+        switch (RendererAPI::GetAPIType())
         {
         case RendererAPI::APIType::None:
         {

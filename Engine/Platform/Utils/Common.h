@@ -33,4 +33,7 @@
     #define AIRWAVE_ASSERT(x, ...)
 #endif // AW_ENABLE_ASSERTS
 
+
+#define BIND_EVENT_FN(fn) std::bind(&fn, this, ::std::placeholders::_1)
+
 #endif //COMMON_H

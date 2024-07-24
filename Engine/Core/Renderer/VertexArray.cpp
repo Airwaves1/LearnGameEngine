@@ -9,7 +9,7 @@ namespace Airwave {
     VertexArray* VertexArray::Create()
     {
         VertexArray* buffer = nullptr;
-        switch (RendererAPI::GetAPI())
+        switch (RendererAPI::GetAPIType())
 		{
 		case RendererAPI::APIType::None:
 		{

@@ -8,11 +8,16 @@ add_library(Core
     "Application/Application.cpp"
 
     "Renderer/RendererAPI.cpp"
+    "Renderer/Renderer.cpp"
+    "Renderer/RenderCommand.cpp"
     "Renderer/VertexArray.cpp"
     "Renderer/Buffer.cpp"
     "Renderer/Shader.cpp"
     
     "ImGui/ImGuiLayer.cpp"
+
+    "Camera/Camera.cpp"
+    "Camera/OrthographicCamera.cpp"
 
 
 )

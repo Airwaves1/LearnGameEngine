@@ -61,7 +61,7 @@ namespace Airwave
         ImGui::DestroyContext();
     }
 
-    void ImGuiLayer::OnImGuiRender()
+    void ImGuiLayer::OnImGuiRender(float deltaTime)
     {
         static bool show = true;
         ImGui::ShowDemoWindow(&show);

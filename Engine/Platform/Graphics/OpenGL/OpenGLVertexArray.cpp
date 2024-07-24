@@ -86,15 +86,6 @@ namespace Airwave
                                       element.IsNormalized() ? GL_TRUE : GL_FALSE,
                                       layout.GetStride(),
                                       (const void *)(uint64_t)(element.GetOffset()));
-
-                LOG_DEBUG("{0}",index);
-                LOG_DEBUG("{0}",GetShaderTypeDataCount(element.GetType()));
-                LOG_DEBUG("{0}",GetShaderDataTypeToOpenGL(element.GetType()));
-                LOG_DEBUG("{0}",element.IsNormalized() ? GL_TRUE : GL_FALSE);
-                LOG_DEBUG("{0}",layout.GetStride());
-                LOG_DEBUG("{0}",(const void *)(uint64_t)(element.GetOffset()));
-                
-
             }
             index++;
         }

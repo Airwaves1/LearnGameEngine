@@ -1,5 +1,5 @@
-#ifndef RENDERER_H
-#define RENDERER_H
+#ifndef RENDERERAPI_H
+#define RENDERERAPI_H
 
 #include "Utils/Common.h"
 #include <glm/glm.hpp>
@@ -24,7 +24,8 @@ namespace Airwave
         virtual void SetClearColor(const glm::vec4 &) const = 0;
         virtual void DrawIndexed(const std::shared_ptr<VertexArray> &, uint32_t count) const = 0; // count为0则绘制整个IndexBuffer
 
-        inline static APIType GetAPI() { return s_CurType; }
+        inline static APIType GetAPIType() { return s_CurType; }
+        inline static void SetAPIType(APIType type) { s_CurType = type; }
 
     private:
         static APIType s_CurType;
@@ -32,4 +33,4 @@ namespace Airwave
 
 } // namespace Airwave
 
-#endif // RENDERER_H
+#endif // RENDERERAPI_H

@@ -6,9 +6,8 @@
 #include "Base/LayerStack.h"
 #include "ImGui/ImGuiLayer.h"
 
-#include "Renderer/VertexArray.h"
-#include "Renderer/Buffer.h"
-#include "Renderer/Shader.h"
+#include <chrono>
+
 namespace Airwave
 {
     class Event;
@@ -43,11 +42,10 @@ namespace Airwave
         bool b_Running = true;
         LayerStack m_LayerStack;
 
+		std::chrono::time_point<std::chrono::steady_clock> m_StartTimePoint;
+		std::chrono::time_point<std::chrono::steady_clock> m_LastTimePoint;
+        float m_DeltaTime = 0.0f;
 
-    private:
-        std::unique_ptr<Shader> m_Shader;
-        std::shared_ptr<VertexArray> m_VertexArray;
-        
     };
 
     // To be defined in CLIENT

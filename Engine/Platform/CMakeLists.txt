@@ -9,6 +9,7 @@ add_library(Platform
     "Window/Windows/WindowsInput.cpp"
 
     "Graphics/OpenGL/OpenGLContext.cpp"
+    "Graphics/OpenGL/OpenGLRendererAPI.cpp"
     "Graphics/OpenGL/OpenGLVertexArray.cpp"
     "Graphics/OpenGL/OpenGLBuffer.cpp"
     "Graphics/OpenGL/OpenGLShader.cpp"

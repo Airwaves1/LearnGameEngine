@@ -2,15 +2,11 @@
 
 #include "Event/Event.h"
 #include "Event/ApplicationEvent.h"
+
 #include "Utils/Log.h"
 
-#include <glad/glad.h>
-#include <glfw/glfw3.h>
-
-#include "Renderer/RendererAPI.h"
 namespace Airwave
 {
-#define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
 
     Application *Application::s_Instance = nullptr;
 
@@ -33,61 +29,8 @@ namespace Airwave
         m_ImGuiLayer = std::make_shared<ImGuiLayer>();
         m_LayerStack.PushOverlay(m_ImGuiLayer);
 
-
-
-        /*--------------------------------*/
-        std::string vertexShaderSource = R"(
-            #version 330 core
-            layout(location = 0) in vec3 a_Position;
-            out vec3 vertexColor;
-
-            void main()
-            {
-                gl_Position = vec4(a_Position + 0.2, 1.0);
-                vertexColor = a_Position + 0.5;
-            }
-        )";
-
-        std::string fragmentShaderSource = R"(
-            #version 330 core
-
-            out vec4 FragColor;
-            in vec3 vertexColor;
-            
-            void main()
-            {
-                FragColor = vec4(vertexColor, 1.0);
-            }
-        )";
-
-        float vertices[3 * 7] = {
-            -0.5f, -0.5f, 0.0f,
-            0.5f, -0.5f, 0.0f,
-            0.0f, 0.5f, 0.0f};
-
-        uint32_t indices[3] = {0, 1, 2};
-
-        // ----------------------------------
-        m_Shader = std::make_unique<Shader>(vertexShaderSource, fragmentShaderSource);
-
-        m_VertexArray.reset(VertexArray::Create());
-        m_VertexArray->Bind();
-
-        std::shared_ptr<VertexBuffer> vertexBuffer;
-        vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
-        BufferLayout layout = {
-            {ShaderDataType::FLOAT3, "a_Position"}};
-        vertexBuffer->SetBufferLayout(layout);
-
-        m_VertexArray->AddVertexBuffer(vertexBuffer);
-
-        std::shared_ptr<IndexBuffer> indexBuffer;
-        indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices)));
-        m_VertexArray->SetIndexBuffer(indexBuffer);
-
-
-
-        // ----------------------------------
+        // 程序初始化完成后, 记录当前时间点为程序开始时间点
+        m_StartTimePoint = std::chrono::steady_clock::now();
     }
 
     Application::~Application()
@@ -96,22 +39,19 @@ namespace Airwave
 
     void Application::Run()
     {
+        m_LastTimePoint = std::chrono::steady_clock::now();
 
         while (this->b_Running)
         {
-            glClearColor(0.5f, 0.3f, 0.8f, 1);
-            glClear(GL_COLOR_BUFFER_BIT);
-
-            m_Shader->Bind();
-            m_VertexArray->Bind();
-            glDrawElements(GL_TRIANGLES, m_VertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+            m_DeltaTime = std::chrono::duration<float>(std::chrono::steady_clock::now() - m_LastTimePoint).count();
+            m_LastTimePoint = std::chrono::steady_clock::now();
 
             for (std::shared_ptr<Layer> layer : m_LayerStack)
-                layer->OnUpdate();
+                layer->OnUpdate(m_DeltaTime);
 
             m_ImGuiLayer->Begin();
             for (std::shared_ptr<Layer> layer : m_LayerStack)
-                layer->OnImGuiRender();
+                layer->OnImGuiRender(m_DeltaTime);
             m_ImGuiLayer->End();
 
             m_Window->OnUpdate();
