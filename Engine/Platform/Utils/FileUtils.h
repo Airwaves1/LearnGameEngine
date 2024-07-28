@@ -1,0 +1,14 @@
+#ifndef FILE_UTILS_H
+#define FILE_UTILS_H
+
+#ifdef RES_ROOT_DIR
+#define RESOURCES_ROOT RES_ROOT_DIR
+#else
+#define RESOURCES_ROOT "Resources/"
+#endif
+
+#define ASSETS_SHADER_DIR RESOURCES_ROOT "Shader/"
+#define ASSETS_TEXTURE_DIR RESOURCES_ROOT "Texture/"
+#define ASSETS_MODEL_DIR RESOURCES_ROOT "Model/"
+
+#endif // FILE_UTILS_H

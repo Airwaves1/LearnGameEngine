@@ -2,6 +2,7 @@
 
 #include "Utils/Common.h"
 #include "Utils/Time.h"
+#include "Utils/FileUtils.h"
 
 #include "Event/Event.h"
 #include "Event/ApplicationEvent.h"
@@ -25,6 +26,7 @@
 #include "Renderer/VertexArray.h"
 #include "Renderer/Buffer.h"
 #include "Renderer/Shader.h"
+#include "Renderer/Texture.h"
 
 // Entry Point
 #include "Application/EntryPoint.h"

@@ -18,7 +18,7 @@ namespace Airwave
 		static inline RendererAPI::APIType GetAPI() { return RendererAPI::GetAPIType(); }
 
         static void Init();
-        static void BeginScene(const Camera &camera);
+        static void BeginScene(Camera* camera);
         static void EndScene();
 
         // 绑定对应的VertexArray, 然后调用DrawCall

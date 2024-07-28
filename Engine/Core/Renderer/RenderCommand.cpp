@@ -15,6 +15,7 @@ namespace Airwave
     void RenderCommand::DrwaIndexed(const std::shared_ptr<VertexArray> &va, uint32_t count)
     {
         // TODO: 为啥不绑定Vertex Buffer
+        va->Bind();
         s_RendererAPI->DrawIndexed(va, count);
     }
 

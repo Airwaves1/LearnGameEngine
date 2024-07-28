@@ -20,8 +20,13 @@ option(GLM_ENABLE_CXX_17 "Enable C++ 17" ON)
 #imgui
 add_subdirectory(imgui)
 
+#stb_image
+add_subdirectory(stb_image)
+
+
 
 target_link_libraries(ThirdParty PUBLIC glfw)
 target_link_libraries(ThirdParty PUBLIC glad)
 target_link_libraries(ThirdParty PUBLIC glm)
 target_link_libraries(ThirdParty PUBLIC ImGui)
+target_link_libraries(ThirdParty PUBLIC stb_image)

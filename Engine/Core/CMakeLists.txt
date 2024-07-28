@@ -13,6 +13,7 @@ add_library(Core
     "Renderer/VertexArray.cpp"
     "Renderer/Buffer.cpp"
     "Renderer/Shader.cpp"
+    "Renderer/Texture.cpp"
     
     "ImGui/ImGuiLayer.cpp"
 

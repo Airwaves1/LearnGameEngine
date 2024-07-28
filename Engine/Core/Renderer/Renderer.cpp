@@ -11,10 +11,9 @@ namespace Airwave
         RenderCommand::Init();
     }
 
-    void Renderer::BeginScene(const Camera &camera)
+    void Renderer::BeginScene(Camera* camera)
     {
-        s_SceneData->ViewProjectionMatrix = camera.GetProjectionMatrix() * camera.GetViewMatrix();
-
+        s_SceneData->ViewProjectionMatrix = camera->GetProjectionMatrix() * camera->GetViewMatrix();
     }
 
     void Renderer::EndScene()
@@ -26,7 +25,7 @@ namespace Airwave
     {
         shader->Bind();
         shader->UploadUniformMat4("u_ViewProjection", s_SceneData->ViewProjectionMatrix);
-        // shader->UploadUniformMat4("u_Transform", transform);
+        shader->UploadUniformMat4("u_Model", transform);
 
         RenderCommand::DrwaIndexed(va);
     }

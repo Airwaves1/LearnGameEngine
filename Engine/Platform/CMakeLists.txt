@@ -13,6 +13,7 @@ add_library(Platform
     "Graphics/OpenGL/OpenGLVertexArray.cpp"
     "Graphics/OpenGL/OpenGLBuffer.cpp"
     "Graphics/OpenGL/OpenGLShader.cpp"
+    "Graphics/OpenGL/OpenGLTexture.cpp"
 
 )
 

@@ -5,7 +5,7 @@ project(AirwaveEngine)
 
 
 add_library(Engine
-    "AirwaveEngine.cpp"
+    "AirwaveEngine.h"
 )
 
 target_link_libraries(Engine PUBLIC Core)

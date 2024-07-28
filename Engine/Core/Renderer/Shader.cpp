@@ -1,73 +1,46 @@
 #include "Renderer/Shader.h"
 #include "Utils/Common.h"
 
-#include <glad/glad.h>
-#include <glm/gtc/type_ptr.hpp>
+#include "Renderer/Renderer.h"
+#include "Graphics/OpenGL/OpenGLShader.h"
 
-namespace Airwave {
+namespace Airwave
+{
 
-    Shader::Shader(const std::string& vertexShaderSource, const std::string& fragmentShaderSource)
+    Shader* Shader::Create(const std::string &vertexSrc, const std::string &fragmentSrc)
     {
-        uint32_t vertexShader = glCreateShader(GL_VERTEX_SHADER);
-        const char* vertexShaderSourceCStr = vertexShaderSource.c_str();
-        glShaderSource(vertexShader, 1, &vertexShaderSourceCStr, nullptr);
-        glCompileShader(vertexShader);
-
-        int success;
-        char infoLog[512];
-        glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-        if (!success)
+        RendererAPI::APIType type = Renderer::GetAPI();
+        switch (type)
         {
-            glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
-            LOG_ERROR("Vertex shader compilation failed: {0}", infoLog);
+        case RendererAPI::APIType::None:
+            LOG_ERROR("RendererAPI::None is not supported");
+            return nullptr;
+        case RendererAPI::APIType::OpenGL:
+            return new OpenGLShader(vertexSrc, fragmentSrc);
+        default:
+            LOG_ERROR("Unknown RendererAPI");
+            return nullptr;
         }
 
-        uint32_t fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-        const char* fragmentShaderSourceCStr = fragmentShaderSource.c_str();
-        glShaderSource(fragmentShader, 1, &fragmentShaderSourceCStr, nullptr);
-        glCompileShader(fragmentShader);
+        return nullptr;
+    }
 
-        glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-        if (!success)
+    Shader* Shader::Create(const std::string &path)
+    {
+        RendererAPI::APIType type = Renderer::GetAPI();
+        switch (type)
         {
-            glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
-            LOG_ERROR("Fragment shader compilation failed: {0}", infoLog);
+        case RendererAPI::APIType::None:
+            LOG_ERROR("RendererAPI::None is not supported");
+            return nullptr;
+        case RendererAPI::APIType::OpenGL:
+            return new OpenGLShader(path);
+        default:
+            LOG_ERROR("Unknown RendererAPI");
+            return nullptr;
         }
 
-        m_RendererID = glCreateProgram();
-        glAttachShader(m_RendererID, vertexShader);
-        glAttachShader(m_RendererID, fragmentShader);
-        glLinkProgram(m_RendererID);
+        return nullptr;
 
-        glGetProgramiv(m_RendererID, GL_LINK_STATUS, &success);
-        if (!success)
-        {
-            glGetProgramInfoLog(m_RendererID, 512, nullptr, infoLog);
-            LOG_ERROR("Shader program linking failed: {0}", infoLog);
-        }
-
-        glDeleteShader(vertexShader);
-        glDeleteShader(fragmentShader);
     }
-
-    Shader::~Shader()
-    {
-        glDeleteProgram(m_RendererID);
-    }
-
-    void Shader::Bind() const
-    {
-        glUseProgram(m_RendererID);
-    }
-
-    void Shader::Unbind() const
-    {
-        glUseProgram(0);
-    }
-
-    void Shader::UploadUniformMat4(const std::string &name, const glm::mat4 &matrix)
-    {
-       GLint location =  glGetUniformLocation(m_RendererID, name.c_str());
-         glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
-    }
-}   // namespace Airwave
+} // namespace Airwave
