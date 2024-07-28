@@ -1,6 +1,7 @@
 #include "Graphics/OpenGL/OpenGLShader.h"
 
 #include "Utils/Common.h"
+#include "Utils/FileUtils.h"
 
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
@@ -60,21 +61,19 @@ namespace Airwave
         }
     )";
 
-    OpenGLShader::OpenGLShader(const std::string &path)
+    OpenGLShader::OpenGLShader(const std::string &vertex, const std::string &fragment, bool fromFile)
     {
-        m_FilePath = path;
-        std::ifstream in(path);
-        if (!in.is_open())
+        std::string vertexSrc;
+        std::string fragmentSrc;
+        if(fromFile)
         {
-            LOG_ERROR("Failed to open file: {0}", path);
-            return;
+            vertexSrc = FileUtils::ReadFile(vertex);
+            fragmentSrc = FileUtils::ReadFile(fragment);
+        }else{
+            vertexSrc = vertex;
+            fragmentSrc = fragment;
         }
 
-        // TODO: Read the file and parse the shader source code
-    }
-
-    OpenGLShader::OpenGLShader(const std::string &vertexSrc, const std::string &fragmentSrc)
-    {
         m_OpenGLSourceCode[ShaderType::Vertex] = vertexSrc;
         m_OpenGLSourceCode[ShaderType::Fragment] = fragmentSrc;
 
@@ -185,7 +184,11 @@ namespace Airwave
         GLint location = glGetUniformLocation(m_RendererID, name.c_str());
         if (location == -1)
         {
-            LOG_ERROR("Uniform {0} not found!", name);
+            if(m_UniformErrordCache.find(name) == m_UniformErrordCache.end())
+            {
+                LOG_ERROR("Uniform {0} not found!", name);
+                m_UniformErrordCache[name] = true;
+            }
             return;
         }
 
@@ -197,7 +200,11 @@ namespace Airwave
         GLint location = glGetUniformLocation(m_RendererID, name.c_str());
         if (location == -1)
         {
-            LOG_ERROR("Uniform {0} not found!", name);
+            if(m_UniformErrordCache.find(name) == m_UniformErrordCache.end())
+            {
+                LOG_ERROR("Uniform {0} not found!", name);
+                m_UniformErrordCache[name] = true;
+            }
             return;
         }
         glUniform1f(location, value);
@@ -208,7 +215,11 @@ namespace Airwave
         GLint location = glGetUniformLocation(m_RendererID, name.c_str());
         if (location == -1)
         {
-            LOG_ERROR("Uniform {0} not found!", name);
+            if(m_UniformErrordCache.find(name) == m_UniformErrordCache.end())
+            {
+                LOG_ERROR("Uniform {0} not found!", name);
+                m_UniformErrordCache[name] = true;
+            }
             return;
         }
         glUniform2f(location, vector2.x, vector2.y);
@@ -219,7 +230,11 @@ namespace Airwave
         GLint location = glGetUniformLocation(m_RendererID, name.c_str());
         if (location == -1)
         {
-            LOG_ERROR("Uniform {0} not found!", name);
+            if(m_UniformErrordCache.find(name) == m_UniformErrordCache.end())
+            {
+                LOG_ERROR("Uniform {0} not found!", name);
+                m_UniformErrordCache[name] = true;
+            }
             return;
         }
         glUniform3f(location, vector3.x, vector3.y, vector3.z);
@@ -230,7 +245,11 @@ namespace Airwave
         GLint location = glGetUniformLocation(m_RendererID, name.c_str());
         if (location == -1)
         {
-            LOG_ERROR("Uniform {0} not found!", name);
+            if(m_UniformErrordCache.find(name) == m_UniformErrordCache.end())
+            {
+                LOG_ERROR("Uniform {0} not found!", name);
+                m_UniformErrordCache[name] = true;
+            }
             return;
         }
         glUniform4f(location, vector4.x, vector4.y, vector4.z, vector4.w);
@@ -241,7 +260,11 @@ namespace Airwave
         GLint location = glGetUniformLocation(m_RendererID, name.c_str());
         if (location == -1)
         {
-            LOG_ERROR("Uniform {0} not found!", name);
+            if(m_UniformErrordCache.find(name) == m_UniformErrordCache.end())
+            {
+                LOG_ERROR("Uniform {0} not found!", name);
+                m_UniformErrordCache[name] = true;
+            }
             return;
         }
         glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
@@ -252,7 +275,11 @@ namespace Airwave
         GLint location = glGetUniformLocation(m_RendererID, name.c_str());
         if (location == -1)
         {
-            LOG_ERROR("Uniform {0} not found!", name);
+            if(m_UniformErrordCache.find(name) == m_UniformErrordCache.end())
+            {
+                LOG_ERROR("Uniform {0} not found!", name);
+                m_UniformErrordCache[name] = true;
+            }
             return;
         }
         glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));

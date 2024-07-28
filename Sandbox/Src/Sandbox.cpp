@@ -52,8 +52,9 @@ public:
             }
         )";
 
-        m_Shader.reset(Airwave::Shader::Create(vertexShaderSource, fragmentShaderSource));
-        
+        // m_Shader.reset(Airwave::Shader::Create(vertexShaderSource, fragmentShaderSource, false));
+        m_Shader.reset(Airwave::Shader::Create(ASSETS_SHADER_DIR "00/Texture.vert", ASSETS_SHADER_DIR "00/Texture.frag"));
+
         m_Texture0 = Airwave::Texture2D::CreateRef(ASSETS_TEXTURE_DIR "container2.png");
         m_Texture1 = Airwave::Texture2D::CreateRef(ASSETS_TEXTURE_DIR "awesomeface.png");
         

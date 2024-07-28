@@ -3,6 +3,8 @@
 #include "Event/Event.h"
 #include "Event/ApplicationEvent.h"
 
+#include "Renderer/Renderer.h"
+
 #include "Utils/Log.h"
 
 namespace Airwave
@@ -24,6 +26,8 @@ namespace Airwave
         m_Window = std::unique_ptr<Window>(Window::Create());
         // 这里会设置m_Window里的std::function<void(Event&)>对象, 当接受Event时, 会调用Application::OnEvent函数
         m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
+
+        Renderer::Init();
 
         // Application应该自带ImGuiLayer, 这段代码应该放到引擎内部而不是User的Application派生类里
         m_ImGuiLayer = std::make_shared<ImGuiLayer>();

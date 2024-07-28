@@ -13,8 +13,6 @@ namespace Airwave
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_LESS);
 
-		// glEnable(GL_DEBUG_OUTPUT);
-		// glDebugMessageCallback(MessageCallback, 0);
     }       
 
     

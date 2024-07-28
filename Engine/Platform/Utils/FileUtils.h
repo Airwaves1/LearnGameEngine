@@ -11,4 +11,16 @@
 #define ASSETS_TEXTURE_DIR RESOURCES_ROOT "Texture/"
 #define ASSETS_MODEL_DIR RESOURCES_ROOT "Model/"
 
+namespace Airwave
+{
+    class FileUtils
+    {
+    public:
+        static std::string ReadFile(const std::string &filepath);
+
+    private:
+        FileUtils() = delete;
+    };
+} // namespace Airwave
+
 #endif // FILE_UTILS_H

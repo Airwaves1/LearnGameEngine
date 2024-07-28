@@ -34,8 +34,7 @@ namespace Airwave
         virtual void UploadUniformMat4(const std::string &name, const glm::mat4 &matrix) = 0;
 
     public:
-        static Shader* Create(const std::string &vertexSrc, const std::string &fragmentSrc);
-        static Shader* Create(const std::string &path);
+        static Shader* Create(const std::string &vertexSrc, const std::string &fragmentSrc, bool fromFile = true);
 
     protected:
         uint32_t m_RendererID;

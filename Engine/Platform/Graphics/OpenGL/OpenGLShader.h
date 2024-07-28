@@ -9,8 +9,8 @@ namespace Airwave
     class OpenGLShader : public Shader
     {
     public:
-        OpenGLShader(const std::string &vertexSrc, const std::string &fragmentSrc);
-        OpenGLShader(const std::string &path);
+        OpenGLShader(const std::string &vertex, const std::string &fragment, bool fromFile = true);
+
         ~OpenGLShader();
 
         void Bind() const override;
@@ -43,6 +43,8 @@ namespace Airwave
         std::string m_FilePath;
 
         int m_ProgramIdBeforeBind = -1;
+
+        std::unordered_map<std::string, bool> m_UniformErrordCache;
 
     public:
         // TODO: To be refactered
