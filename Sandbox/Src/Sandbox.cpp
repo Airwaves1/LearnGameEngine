@@ -6,6 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+
 class ExampleLayer : public Airwave::Layer
 {
 public:
@@ -14,46 +15,10 @@ public:
     {
         m_Camera = std::make_unique<Airwave::OrthographicCamera>(-1.9f, 1.9f, -0.9f, 0.9f);
 
-        std::string vertexShaderSource = R"(
-            #version 330 core
 
-            layout(location = 0) in vec3 a_Position;
-            layout(location = 1) in vec2 a_TexCoord;
+        m_ShaderLibrary = std::make_shared<Airwave::ShaderLibrary>();
+        auto m_Shader = m_ShaderLibrary->Load("Texture", ASSETS_SHADER_DIR "00/Texture.vert", ASSETS_SHADER_DIR "00/Texture.frag");
 
-            uniform mat4 u_ViewProjection;
-            uniform mat4 u_Model;
-
-            out vec2 v_TexCoord;
-
-            void main()
-            {
-                gl_Position = u_ViewProjection * u_Model * vec4(a_Position, 1.0);
-                
-                v_TexCoord = a_TexCoord;
-            }
-        )";
-
-        std::string fragmentShaderSource = R"(
-            #version 330 core
-
-            in vec2 v_TexCoord;
-
-            uniform sampler2D u_Texture0;
-            uniform sampler2D u_Texture1;
-
-            out vec4 FragColor;
-
-            void main()
-            {
-                vec4 texColor0 = texture(u_Texture0, v_TexCoord);
-                vec4 texColor1 = texture(u_Texture1, v_TexCoord);
-
-                FragColor = mix(texColor0, texColor1, 0.2);
-            }
-        )";
-
-        // m_Shader.reset(Airwave::Shader::Create(vertexShaderSource, fragmentShaderSource, false));
-        m_Shader.reset(Airwave::Shader::Create(ASSETS_SHADER_DIR "00/Texture.vert", ASSETS_SHADER_DIR "00/Texture.frag"));
 
         m_Texture0 = Airwave::Texture2D::CreateRef(ASSETS_TEXTURE_DIR "container2.png");
         m_Texture1 = Airwave::Texture2D::CreateRef(ASSETS_TEXTURE_DIR "awesomeface.png");
@@ -96,6 +61,9 @@ public:
         Airwave::RenderCommand::Clear();
 
         glm::vec3 scale = glm::vec3(0.2f);
+
+
+        auto m_Shader = m_ShaderLibrary->Get("Texture");
 
         Airwave::Renderer::BeginScene(m_Camera.get());
 
@@ -166,9 +134,11 @@ private:
     glm::vec3 m_CameraPosition = {0.0f, 0.0f, 0.0f};
     float m_CameraSpeed = 0.05f;
 
+    std::shared_ptr<Airwave::ShaderLibrary> m_ShaderLibrary;
+
     std::shared_ptr<Airwave::VertexArray> m_TriangleVertexArray;
     std::shared_ptr<Airwave::VertexArray> m_SquareVertexArray;
-    std::shared_ptr<Airwave::Shader> m_Shader;
+    // std::shared_ptr<Airwave::Shader> m_Shader;
 
     std::shared_ptr<Airwave::Texture> m_Texture0;
     std::shared_ptr<Airwave::Texture> m_Texture1;

@@ -23,6 +23,8 @@ namespace Airwave
         virtual void Bind() const = 0;
         virtual void Unbind() const = 0;
 
+        virtual std::string GetName() const { return m_Name; }
+
         virtual void UploadUniformInt(const std::string &name, int value) = 0;
 
         virtual void UploadUniformFloat(const std::string &name, float value) = 0;
@@ -38,6 +40,7 @@ namespace Airwave
 
     protected:
         uint32_t m_RendererID;
+        std::string m_Name;
     };
 
 } // namespace Airwave
