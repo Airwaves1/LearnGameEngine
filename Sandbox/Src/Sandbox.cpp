@@ -118,8 +118,8 @@ public:
     void OnEvent(Airwave::Event &event) override
     {
         Airwave::EventDispatcher dispatcher(event);
-        dispatcher.Dispatch<Airwave::KeyPressedEvent>(BIND_EVENT_FN(ExampleLayer::OnKeyPressedEvent));
-        dispatcher.Dispatch<Airwave::MouseScrolledEvent>(BIND_EVENT_FN(ExampleLayer::OnMouseScrolledEvent));
+        dispatcher.Dispatch<Airwave::KeyPressedEvent>(std::bind(&ExampleLayer::OnKeyPressedEvent, this, std::placeholders::_1));
+        dispatcher.Dispatch<Airwave::MouseScrolledEvent>(std::bind(&ExampleLayer::OnMouseScrolledEvent, this, std::placeholders::_1));
     }
 
     bool OnKeyPressedEvent(Airwave::KeyPressedEvent &event)

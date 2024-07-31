@@ -25,7 +25,7 @@ namespace Airwave
 
         m_Window = std::unique_ptr<Window>(Window::Create());
         // 这里会设置m_Window里的std::function<void(Event&)>对象, 当接受Event时, 会调用Application::OnEvent函数
-        m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
+        m_Window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
 
         Renderer::Init();
 
@@ -69,7 +69,7 @@ namespace Airwave
         // 1. 当接受窗口来的Event时, 首先判断是否是窗口关闭的事件
         //  Dispatch函数只有在Event类型跟模板T匹配时, 才响应事件
         //  std::bind其实是把函数和对应的参数绑定的一起
-        dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
+        dispatcher.Dispatch<WindowCloseEvent>(std::bind(&Application::OnWindowClose, this, std::placeholders::_1));
 
         // 2. 否则才传递到layer来执行事件, 逆序遍历是为了让ImGuiLayer最先收到Event
         for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
