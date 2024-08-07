@@ -49,7 +49,9 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Engine/ThirdParty/imgui)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Engine/ThirdParty/imgui/backends)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Engine/ThirdParty/glm)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Engine/ThirdParty/stb_image)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Engine/ThirdParty/entt/single_include)
 
 #添加子目录
 add_subdirectory(Engine)
 add_subdirectory(Sandbox)
+

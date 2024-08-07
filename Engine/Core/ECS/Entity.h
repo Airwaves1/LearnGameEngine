@@ -1,0 +1,12 @@
+#ifndef ENTITY_H
+#define ENTITY_H
+
+namespace Airwave
+{
+    class Entity
+    {
+    };
+
+}
+
+#endif // !ENTITY_H

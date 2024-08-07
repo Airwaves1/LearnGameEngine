@@ -11,6 +11,7 @@ add_library(Platform
 
     "Graphics/OpenGL/OpenGLContext.cpp"
     "Graphics/OpenGL/OpenGLRendererAPI.cpp"
+    "Graphics/OpenGL/OpenGLFrameBuffer.cpp"
     "Graphics/OpenGL/OpenGLVertexArray.cpp"
     "Graphics/OpenGL/OpenGLBuffer.cpp"
     "Graphics/OpenGL/OpenGLShader.cpp"

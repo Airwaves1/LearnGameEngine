@@ -10,6 +10,7 @@ add_library(Core
     "Renderer/RendererAPI.cpp"
     "Renderer/Renderer.cpp"
     "Renderer/RenderCommand.cpp"
+    "Renderer/FrameBuffer.cpp"
     "Renderer/VertexArray.cpp"
     "Renderer/Buffer.cpp"
     "Renderer/Shader.cpp"
@@ -21,6 +22,11 @@ add_library(Core
     "Camera/Camera.cpp"
     "Camera/OrthographicCamera.cpp"
 
+
+    "ECS/UUID.cpp"
+    "ECS/Node.cpp"
+    "ECS/Scene.cpp"
+    "ECS/Entity.cpp"
 
 )
 

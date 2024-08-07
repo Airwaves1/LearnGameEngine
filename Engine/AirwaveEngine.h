@@ -28,6 +28,7 @@
 #include "Renderer/Shader.h"
 #include "Renderer/ShaderLibrary.h"
 #include "Renderer/Texture.h"
+#include "Renderer/FrameBuffer.h"
 
 // Entry Point
 #include "Application/EntryPoint.h"

@@ -5,7 +5,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
+\
+#include "ECS/UUID.h"
 
 class ExampleLayer : public Airwave::Layer
 {
@@ -13,8 +14,12 @@ public:
     ExampleLayer()
         : Layer("Example")
     {
+        auto uuid = Airwave::UUID::Generate();
+        LOG_INFO("UUID: {0}", uuid.ToString());
+
         m_Camera = std::make_unique<Airwave::OrthographicCamera>(-1.9f, 1.9f, -0.9f, 0.9f);
 
+        // m_FrameBuffer = Airwave::FrameBuffer::Create({1280, 720});
 
         m_ShaderLibrary = std::make_shared<Airwave::ShaderLibrary>();
         auto m_Shader = m_ShaderLibrary->Load("Texture", ASSETS_SHADER_DIR "00/Texture.vert", ASSETS_SHADER_DIR "00/Texture.frag");
@@ -142,6 +147,8 @@ private:
 
     std::shared_ptr<Airwave::Texture> m_Texture0;
     std::shared_ptr<Airwave::Texture> m_Texture1;
+    
+    std::shared_ptr<Airwave::FrameBuffer> m_FrameBuffer;
 };
 
 class Sandbox : public Airwave::Application

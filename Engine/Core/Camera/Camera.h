@@ -25,7 +25,7 @@ namespace Airwave
         const glm::vec3 &GetRotation() const { return m_Rotation; }
         inline void SetRotation(const glm::vec3 &rotation)
         {
-            m_Rotation = rotation;
+            m_Rotation = rotation; 
             RecalculateViewMatrix();
         }
 
