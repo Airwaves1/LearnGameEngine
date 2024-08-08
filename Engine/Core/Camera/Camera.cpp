@@ -1,7 +1,27 @@
-#include "Camera/Camera.h"
-#include "Utils/Common.h"
+#include "Camera.h"
 
-namespace Airwave
-{
-    
-} // namespace Airwave
+
+namespace Airwave {
+
+	Camera::Camera()
+	{
+	}
+
+	Camera::~Camera()
+	{
+
+	}
+
+	void Camera::ReSetCamera()
+	{
+	}
+
+	void Camera::UpdateCameraVectors()
+	{
+
+
+	}
+
+
+}
+

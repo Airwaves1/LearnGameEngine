@@ -16,11 +16,14 @@ add_library(Core
     "Renderer/Shader.cpp"
     "Renderer/ShaderLibrary.cpp"
     "Renderer/Texture.cpp"
+
+    "Geometry/GeometryUtils.cpp"
     
     "ImGui/ImGuiLayer.cpp"
 
     "Camera/Camera.cpp"
     "Camera/OrthographicCamera.cpp"
+    "Camera/PerspectiveCamera.cpp"
 
 
     "ECS/UUID.cpp"

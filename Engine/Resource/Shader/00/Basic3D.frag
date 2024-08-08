@@ -7,19 +7,10 @@ in vec2 v_TexCoord;
 
 out vec4 FragColor;
 
-uniform sampler2D u_Texture;
-uniform vec4 u_Color;
+uniform vec3 u_Color;
 
 void main() {
-    // 纹理颜色
-    vec4 texColor = texture(u_Texture, v_TexCoord);
+    vec4 outColor = vec4(u_Color, 1.0);
 
-    // 法线
-    vec3 normal = normalize(v_Normal);
-
-    // 计算最终颜色
-    vec4 finalColor = texColor * u_Color * v_Color;
-
-    // 输出颜色
-    FragColor = finalColor;        
+    FragColor = outColor;
 }

@@ -16,8 +16,15 @@ namespace Airwave
     private:
         UUID m_UUID;
         std::string m_Name;
+    
+        entt::registry m_EcsRegistry;
+
+        std::unordered_map<entt::entity, std::shared_ptr<Entity>> m_EntityMap;
+
+        std::shared_ptr<Node> m_RootNode;
+
+        friend class Entity;
         
-        entt::registry m_Registry;
     };
 
 } // namespace  Airwave
