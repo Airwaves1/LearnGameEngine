@@ -61,7 +61,7 @@ namespace Airwave
         return buffer;
     }
 
-    std::shared_ptr<IndexBuffer> IndexBuffer::Create(uint32_t *indices, uint32_t count)
+    std::shared_ptr<IndexBuffer> IndexBuffer::Create(uint32_t *indices, uint32_t size)
     {
         std::shared_ptr<IndexBuffer> buffer = nullptr;
         switch (RendererAPI::GetAPIType())
@@ -74,7 +74,7 @@ namespace Airwave
         }
         case RendererAPI::APIType::OpenGL:
         {
-            buffer = std::make_shared<OpenGLIndexBuffer>(indices, count);
+            buffer = std::make_shared<OpenGLIndexBuffer>(indices, size);
             break;
         }
         default:

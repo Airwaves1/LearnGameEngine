@@ -34,99 +34,28 @@ public:
 
         glm::vec3 uniformColor = {0.8f, 0.3f, 0.6f};
 
-        float vertexData[] = {
-            // Positions         // UVs     // Normals
-            // Front Face
-            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-            0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-            0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-            -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
 
-            // Back Face
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f,
-            0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f,
-            0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f,
-            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, -1.0f,
+        std::vector<Airwave::AWVertex> vertices;
+        std::vector<uint32_t> indices;
+        Airwave::GeometryUtils::CreateCube(vertices, indices, 1.0f, 1.0f, 1, 3,3,3);
+        // Airwave::GeometryUtils::CreatePlane(vertices, indices, 1.0f, 1.0f, 1, 1);
+        // Airwave::GeometryUtils::CreateSphere(vertices, indices, 1.0f, 32, 32);
 
-            // Top Face
-            -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-            0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-            0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-            -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-
-            // Bottom Face
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f,
-            0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, -1.0f, 0.0f,
-            0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 0.0f, -1.0f, 0.0f,
-            -0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f,
-
-            // Left Face
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
-            -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, -1.0f, 0.0f, 0.0f,
-            -0.5f, 0.5f, 0.5f, 1.0f, 1.0f, -1.0f, 0.0f, 0.0f,
-            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f,
-
-            // Right Face
-            0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-            0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-            0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-            0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f};
-
-        uint32_t indexData[] = {
-            // Front Face
-            0, 1, 2, 2, 3, 0,
-            // Back Face
-            4, 5, 6, 6, 7, 4,
-            // Top Face
-            8, 9, 10, 10, 11, 8,
-            // Bottom Face
-            12, 13, 14, 14, 15, 12,
-            // Left Face
-            16, 17, 18, 18, 19, 16,
-            // Right Face
-            20, 21, 22, 22, 23, 20};
-
-        shader->Bind();
-        shader->UploadUniformFloat3("u_Color", uniformColor);
-
-        // uint32_t vbo, ibo;
-        // glBindVertexArray(m_vao);
-        // glGenVertexArrays(1, &m_vao);
-
-
-        // glGenBuffers(1, &vbo);
-        // glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        // glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
-
-        // glGenBuffers(1, &ibo);
-        // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-        // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indexData), indexData, GL_STATIC_DRAW);
-
-        // // Position
-        // glEnableVertexAttribArray(0);
-        // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
-        // // UV
-        // glEnableVertexAttribArray(1);
-        // glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
-        // // Normal
-        // glEnableVertexAttribArray(2);
-        // glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(5 * sizeof(float)));
-
-        // glBindVertexArray(0);
+        auto vertexData = Airwave::GeometryUtils::ConvertAWVertexToFloatArray(vertices);
 
         m_VertexArray = Airwave::VertexArray::Create();
+        {
+            auto vertexBuffer = Airwave::VertexBuffer::Create(vertexData.data(), vertexData.size() * sizeof(float));
+            auto bufferLayout = Airwave::BufferLayout{
+                {Airwave::ShaderDataType::FLOAT3, "a_Position"},
+                {Airwave::ShaderDataType::FLOAT2, "a_TexCoord"},
+                {Airwave::ShaderDataType::FLOAT3, "a_Normal"}};
+            vertexBuffer->SetBufferLayout(bufferLayout);
+            m_VertexArray->AddVertexBuffer(vertexBuffer);
 
-        auto vertexBuffer = Airwave::VertexBuffer::Create(vertexData, sizeof(vertexData));
-        auto bufferLayout = Airwave::BufferLayout{
-            {Airwave::ShaderDataType::FLOAT3, "a_Position"},
-            {Airwave::ShaderDataType::FLOAT2, "a_TexCoord"},
-            {Airwave::ShaderDataType::FLOAT3, "a_Normal"}};
-        vertexBuffer->SetBufferLayout(bufferLayout);
-        m_VertexArray->AddVertexBuffer(vertexBuffer);
-
-        auto indexBuffer = Airwave::IndexBuffer::Create(indexData, sizeof(indexData));
-        m_VertexArray->SetIndexBuffer(indexBuffer);
-
+            auto indexBuffer = Airwave::IndexBuffer::Create(indices.data(), indices.size() * sizeof(uint32_t));
+            m_VertexArray->SetIndexBuffer(indexBuffer);
+        }
         m_VertexArray->Unbind();
     }
 
@@ -135,13 +64,14 @@ public:
         glViewport(0, 0, Airwave::Application::Get().GetWindow().GetWidth(), Airwave::Application::Get().GetWindow().GetHeight());
         Airwave::RenderCommand::SetClearColor({0.2, 0.2, 0.2, 1.0});
         Airwave::RenderCommand::Clear();
+        //线框模式
+        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, -10.0f));
         model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
         model = glm::rotate(model, glm::radians(m_Rotation), glm::vec3(1.0f, 1.0f, 1.0f));
-        m_Rotation += 5.0f * deltaTime;
-
+        m_Rotation += 15.0f * deltaTime;
 
         Airwave::Renderer::BeginScene(m_Camera);
         Airwave::Renderer::Submit(m_ShaderLibrary->Get("Basic3D"), m_VertexArray, model);

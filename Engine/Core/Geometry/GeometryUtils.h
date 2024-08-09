@@ -22,7 +22,7 @@ namespace Airwave
         static std::vector<float> ConvertAWVertexToFloatArray(const std::vector<Airwave::AWVertex> &vertices)
         {
             std::vector<float> result;
-            result.reserve(vertices.size() * 5); // 每个顶点包含5个浮点数
+            result.reserve(vertices.size() * 8); // 每个顶点包含5个浮点数
 
             for (const auto &vertex : vertices)
             {
@@ -33,6 +33,10 @@ namespace Airwave
 
                 result.push_back(vertex.texCoord.x);
                 result.push_back(vertex.texCoord.y);
+
+                result.push_back(vertex.normal.x);
+                result.push_back(vertex.normal.y);
+                result.push_back(vertex.normal.z);
             }
 
             return result;

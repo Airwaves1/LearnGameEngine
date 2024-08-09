@@ -176,7 +176,7 @@ namespace Airwave
 		virtual void Unbind() const = 0;
 
 		virtual uint32_t GetCount() const = 0;
-		static std::shared_ptr<IndexBuffer> Create(uint32_t *indices, uint32_t count);
+		static std::shared_ptr<IndexBuffer> Create(uint32_t *indices, uint32_t size);
 
 	protected:
 		uint32_t m_IndexBuffer;
