@@ -4,32 +4,32 @@
 #include "Graphics/OpenGL/OpenGLVertexArray.h"
 #include <glad/glad.h>
 
-namespace Airwave {
+namespace Airwave
+{
 
-    VertexArray* VertexArray::Create()
+    std::shared_ptr<VertexArray> VertexArray::Create()
     {
-        VertexArray* buffer = nullptr;
+        std::shared_ptr<VertexArray> buffer = nullptr;
         switch (RendererAPI::GetAPIType())
-		{
-		case RendererAPI::APIType::None:
-		{
-			LOG_ERROR("RendererAPI::None is currently not supported!");
+        {
+        case RendererAPI::APIType::None:
+        {
+            LOG_ERROR("RendererAPI::None is currently not supported!");
             AIRWAVE_ASSERT(false, "RendererAPI::None is currently not supported!");
             break;
-		}
-		case RendererAPI::APIType::OpenGL:
-		{
-			buffer = (new OpenGLVertexArray());
+        }
+        case RendererAPI::APIType::OpenGL:
+        {
+            buffer = std::make_shared<OpenGLVertexArray>();
             break;
-		}
+        }
         default:
             LOG_ERROR("Unknown RendererAPI");
             AIRWAVE_ASSERT(false, "Unknown RendererAPI");
             break;
-		}
+        }
 
-		return buffer;
+        return buffer;
     }
 
-
-}   // namespace Airwave
+} // namespace Airwave

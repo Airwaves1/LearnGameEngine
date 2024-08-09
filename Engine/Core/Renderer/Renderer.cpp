@@ -11,7 +11,7 @@ namespace Airwave
         RenderCommand::Init();
     }
 
-    void Renderer::BeginScene(Camera* camera)
+    void Renderer::BeginScene(std::shared_ptr<Camera> camera)
     {
         s_SceneData->ViewProjectionMatrix = camera->GetProjectionMatrix() * camera->GetViewMatrix();
     }

@@ -16,7 +16,10 @@ namespace Airwave
     {
         // TODO: 为啥不绑定Vertex Buffer
         va->Bind();
-        s_RendererAPI->DrawIndexed(va, count);
+        if(count == 0)
+            s_RendererAPI->DrawIndexed(va, va->GetIndexBuffer()->GetCount());
+        else
+            s_RendererAPI->DrawIndexed(va, count);
     }
 
     void RenderCommand::Clear()

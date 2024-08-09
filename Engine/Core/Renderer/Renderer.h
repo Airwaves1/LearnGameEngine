@@ -18,7 +18,7 @@ namespace Airwave
 		static inline RendererAPI::APIType GetAPI() { return RendererAPI::GetAPIType(); }
 
         static void Init();
-        static void BeginScene(Camera* camera);
+        static void BeginScene(std::shared_ptr<Camera> camera);
         static void EndScene();
 
         // 绑定对应的VertexArray, 然后调用DrawCall
@@ -32,6 +32,8 @@ namespace Airwave
         struct SceneData
         {
             glm::mat4 ViewProjectionMatrix;
+            glm::mat4 ViewMatrix;
+            glm::mat4 ProjectionMatrix;
         };
 
         static SceneData *s_SceneData;

@@ -157,8 +157,12 @@ namespace Airwave
 		virtual void SetData(uint32_t pos, void *data, uint32_t len) = 0;
 
 		// 注意这个static函数是在基类声明的, 会根据当前Renderer::GetAPI()返回VertexBuffer的派生类对象
-		static VertexBuffer *Create(float *vertices, uint32_t size); // static buffer
-		static VertexBuffer *Create(uint32_t size);					 // dynamic buffer
+		// static VertexBuffer *Create(float *vertices, uint32_t size); // static buffer
+		// static VertexBuffer *Create(uint32_t size);					 // dynamic buffer
+
+		static std::shared_ptr<VertexBuffer> Create(float *vertices, uint32_t size);
+		static std::shared_ptr<VertexBuffer> Create(uint32_t size);
+
 	protected:
 		uint32_t m_VertexBuffer;
 	};
@@ -172,7 +176,7 @@ namespace Airwave
 		virtual void Unbind() const = 0;
 
 		virtual uint32_t GetCount() const = 0;
-		static IndexBuffer *Create(uint32_t *indices, uint32_t count);
+		static std::shared_ptr<IndexBuffer> Create(uint32_t *indices, uint32_t count);
 
 	protected:
 		uint32_t m_IndexBuffer;

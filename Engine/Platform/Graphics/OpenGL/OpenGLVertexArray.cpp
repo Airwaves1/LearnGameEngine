@@ -86,6 +86,7 @@ namespace Airwave
                                       element.IsNormalized() ? GL_TRUE : GL_FALSE,
                                       layout.GetStride(),
                                       (const void *)(uint64_t)(element.GetOffset()));
+                                
             }
             index++;
         }

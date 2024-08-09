@@ -9,9 +9,9 @@ namespace Airwave
     // 注意声明为static的函数，在定义的时候不需要写static关键字
     // 而且这个Create函数是在基类定义的，因为创建的窗口对象应该包含多种平台的派生类对象，所以放到了基类里
     // 而且这个基类的cpp引用了相关的派生类的头文件
-    VertexBuffer *VertexBuffer::Create(float *vertices, uint32_t size)
+    std::shared_ptr<VertexBuffer> VertexBuffer::Create(float *vertices, uint32_t size)
     {
-        VertexBuffer *buffer = nullptr;
+        std::shared_ptr<VertexBuffer> buffer = nullptr;
         switch (RendererAPI::GetAPIType())
         {
         case RendererAPI::APIType::None:
@@ -23,8 +23,7 @@ namespace Airwave
 
         case RendererAPI::APIType::OpenGL:
         {
-            buffer = new OpenGLVertexBuffer(vertices, size);
-
+            buffer = std::make_shared<OpenGLVertexBuffer>(vertices, size);
             break;
         }
 
@@ -36,9 +35,9 @@ namespace Airwave
         return buffer;
     }
 
-    VertexBuffer *VertexBuffer::Create(uint32_t size)
+    std::shared_ptr<VertexBuffer> VertexBuffer::Create(uint32_t size)
     {
-        VertexBuffer *buffer = nullptr;
+        std::shared_ptr<VertexBuffer> buffer = nullptr;
         switch (RendererAPI::GetAPIType())
         {
         case RendererAPI::APIType::None:
@@ -50,8 +49,7 @@ namespace Airwave
 
         case RendererAPI::APIType::OpenGL:
         {
-            buffer = new OpenGLVertexBuffer(size);
-
+            buffer = std::make_shared<OpenGLVertexBuffer>(size);
             break;
         }
 
@@ -63,9 +61,9 @@ namespace Airwave
         return buffer;
     }
 
-    IndexBuffer *IndexBuffer::Create(uint32_t *indices, uint32_t count)
+    std::shared_ptr<IndexBuffer> IndexBuffer::Create(uint32_t *indices, uint32_t count)
     {
-        IndexBuffer *buffer = nullptr;
+        std::shared_ptr<IndexBuffer> buffer = nullptr;
         switch (RendererAPI::GetAPIType())
         {
         case RendererAPI::APIType::None:
@@ -76,7 +74,7 @@ namespace Airwave
         }
         case RendererAPI::APIType::OpenGL:
         {
-            return new OpenGLIndexBuffer(indices, count);
+            buffer = std::make_shared<OpenGLIndexBuffer>(indices, count);
             break;
         }
         default:
@@ -94,6 +92,7 @@ namespace Airwave
         {
             element.SetOffset(m_Stride);
             m_Stride += element.GetSize();
+            LOG_DEBUG("Element Offset: {0}, Element Size: {1}", element.GetOffset(), element.GetSize());
         }
     }
 

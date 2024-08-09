@@ -11,6 +11,7 @@ uniform vec3 u_Color;
 
 void main() {
     vec4 outColor = vec4(u_Color, 1.0);
+    outColor.rgb = v_Normal;
 
     FragColor = outColor;
 }
