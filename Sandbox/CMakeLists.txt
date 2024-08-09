@@ -8,6 +8,3 @@ add_executable(SandboxApp
 )
 
 target_link_libraries(SandboxApp PRIVATE Engine)
-
-# 添加编译器选项以禁用未使用的头文件包含警告
-target_compile_options(SandboxApp PRIVATE -Wno-unused-include)

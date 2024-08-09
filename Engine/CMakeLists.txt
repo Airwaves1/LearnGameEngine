@@ -16,6 +16,3 @@ target_link_libraries(Engine PUBLIC Core)
 add_subdirectory(Core)
 add_subdirectory(Platform)
 add_subdirectory(ThirdParty)
-
-# 添加编译器选项以禁用未使用的头文件包含警告
-target_compile_options(Engine PRIVATE -Wno-unused-include)

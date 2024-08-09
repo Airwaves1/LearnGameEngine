@@ -19,21 +19,20 @@ public:
     ExampleLayer()
         : Layer("Example")
     {
+        auto width = Airwave::Application::Get().GetWindow().GetWidth();
+        auto height = Airwave::Application::Get().GetWindow().GetWidth();
+
         auto uuid = Airwave::UUID::Generate();
         LOG_INFO("UUID: {0}", uuid.ToString());
 
-        m_Camera = std::make_unique<Airwave::PerspectiveCamera>(glm::radians(45.0f), 1.0f, 0.1f, 10000.0f);
+        m_Camera = std::make_unique<Airwave::PerspectiveCamera>(glm::radians(65.0f), width/ height,0.1f, 10000.0f);
+        m_Camera->SetPosition({0.0f, 0.0f, 15.0f});
 
         m_ShaderLibrary = std::make_shared<Airwave::ShaderLibrary>();
         m_ShaderLibrary->Load("Texture", ASSETS_SHADER_DIR "00/Texture.vert", ASSETS_SHADER_DIR "00/Texture.frag");
         auto shader = m_ShaderLibrary->Load("Basic3D", ASSETS_SHADER_DIR "00/Basic3D.vert", ASSETS_SHADER_DIR "00/Basic3D.frag");
 
         glm::vec3 uniformColor = {0.8f, 0.3f, 0.6f};
-        // std::vector<Airwave::AWVertex> vertices;
-        // std::vector<uint32_t> indices;
-        // Airwave::GeometryUtils::CreateCube(vertices, indices);
-        // size_t size;
-        // std::vector<float> vertexData = Airwave::GeometryUtils::ConvertAWVertexToFloatArray(vertices);
 
         float vertexData[] = {
             // Positions         // UVs     // Normals
@@ -90,25 +89,31 @@ public:
         shader->Bind();
         shader->UploadUniformFloat3("u_Color", uniformColor);
 
-        m_VertexArray.reset(Airwave::VertexArray::Create());
-        m_VertexArray->Bind();
+        uint32_t vbo, ibo;
+        glGenVertexArrays(1, &m_vao);
+        glGenBuffers(1, &vbo);
+        glGenBuffers(1, &ibo);
 
-        // vertex buffer
-        std::shared_ptr<Airwave::VertexBuffer> vb;
-        vb.reset(Airwave::VertexBuffer::Create(vertexData, 192 * sizeof(float)));
-        Airwave::BufferLayout layout = {
-            {Airwave::ShaderDataType::FLOAT3, "a_Position"},
-            {Airwave::ShaderDataType::FLOAT2, "a_TexCoord"},
-            {Airwave::ShaderDataType::FLOAT3, "a_Normal"}};
-        vb->SetBufferLayout(layout);
-        // index buffer
-        std::shared_ptr<Airwave::IndexBuffer> ib;
-        ib.reset(Airwave::IndexBuffer::Create(indexData, 36));
+        glBindVertexArray(m_vao);
 
-        m_VertexArray->AddVertexBuffer(vb);
-        m_VertexArray->SetIndexBuffer(ib);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
 
-        m_VertexArray->Unbind();
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indexData), indexData, GL_STATIC_DRAW);
+
+        // Position
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
+        // UV
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
+        // Normal
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(5 * sizeof(float)));
+
+        glBindVertexArray(0);        
+
     }
 
     void OnUpdate(float deltaTime) override
@@ -117,17 +122,23 @@ public:
         Airwave::RenderCommand::SetClearColor({0.5, 0.4, 0.7, 1.0});
         Airwave::RenderCommand::Clear();
 
-        // 旋转30度
-        glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f));
-        translation = glm::rotate(translation, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        // // 缩小0.5倍
-        translation = glm::scale(translation, glm::vec3(0.1f, 0.1f, 0.1f));
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, -10.0f));
+        model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
 
-        Airwave::Renderer::BeginScene(m_Camera.get());
-        Airwave::Renderer::Submit(m_ShaderLibrary->Get("Basic3D"), m_VertexArray, translation);
-        Airwave::Renderer::EndScene();
 
-        Airwave::RenderCommand::DrwaIndexed(m_VertexArray);
+        glm::mat4 view = m_Camera->GetViewMatrix();
+        glm::mat4 proj = m_Camera->GetProjectionMatrix();
+        glm::mat4 viewProj = proj * view;
+
+        auto shader = m_ShaderLibrary->Get("Basic3D");
+        shader->Bind();
+        shader->UploadUniformMat4("u_Model", model);
+        shader->UploadUniformMat4("u_ViewProjection", viewProj);
+
+        glBindVertexArray(m_vao);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
+
     }
 
     void OnEvent(Airwave::Event &event) override
@@ -161,6 +172,9 @@ private:
     std::shared_ptr<Airwave::ShaderLibrary> m_ShaderLibrary;
 
     std::shared_ptr<Airwave::VertexArray> m_VertexArray;
+
+    uint32_t m_vao;
+
 };
 
 class Sandbox : public Airwave::Application
