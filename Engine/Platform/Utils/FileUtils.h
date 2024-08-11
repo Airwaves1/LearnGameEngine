@@ -1,6 +1,8 @@
 #ifndef FILE_UTILS_H
 #define FILE_UTILS_H
 
+#include <string>
+
 #ifdef RES_ROOT_DIR
 #define RESOURCES_ROOT RES_ROOT_DIR
 #else
@@ -10,6 +12,7 @@
 #define ASSETS_SHADER_DIR RESOURCES_ROOT "Shader/"
 #define ASSETS_TEXTURE_DIR RESOURCES_ROOT "Texture/"
 #define ASSETS_MODEL_DIR RESOURCES_ROOT "Model/"
+
 
 namespace Airwave
 {

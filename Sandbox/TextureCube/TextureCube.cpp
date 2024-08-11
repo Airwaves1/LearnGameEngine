@@ -1,9 +1,4 @@
 #include "AirwaveEngine.h"
-
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
-
 #include "Camera/Camera.h"
 #include "Camera/PerspectiveCamera.h"
 
@@ -14,6 +9,10 @@ class ExampleLayer : public Airwave::Layer
 public:
     ExampleLayer()
         : Layer("Example")
+    {
+    }
+
+    ~ExampleLayer()
     {
     }
 
