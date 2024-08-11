@@ -1,6 +1,7 @@
 #include "Utils/Common.h"
 #include "Renderer/RenderCommand.h"
-#include  "Graphics/OpenGL/OpenGLRendererAPI.h"
+#include "Graphics/OpenGL/OpenGLRendererAPI.h"
+#include "RenderCommand.h"
 
 namespace Airwave
 {
@@ -16,7 +17,7 @@ namespace Airwave
     {
         // TODO: 为啥不绑定Vertex Buffer
         va->Bind();
-        if(count == 0)
+        if (count == 0)
             s_RendererAPI->DrawIndexed(va, va->GetIndexBuffer()->GetCount());
         else
             s_RendererAPI->DrawIndexed(va, count);
@@ -32,4 +33,8 @@ namespace Airwave
         s_RendererAPI->SetClearColor(color);
     }
 
-} // namespace Airwave
+    void RenderCommand::OnViewportResize(uint32_t width, uint32_t height)
+    {
+        s_RendererAPI->OnViewportResize(width, height);
+    }
+}

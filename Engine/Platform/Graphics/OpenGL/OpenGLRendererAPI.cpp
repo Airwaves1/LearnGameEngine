@@ -1,7 +1,7 @@
 #include "Graphics/OpenGL/OpenGLRendererAPI.h"
 #include "Utils/Common.h"
 #include <glad/glad.h>
-
+#include "OpenGLRendererAPI.h"
 
 namespace Airwave
 {
@@ -12,10 +12,8 @@ namespace Airwave
 
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_LESS);
+    }
 
-    }       
-
-    
     void OpenGLRendererAPI::Clear() const
     {
         // TODO: 后期添加flag
@@ -30,7 +28,7 @@ namespace Airwave
     void OpenGLRendererAPI::DrawIndexed(const std::shared_ptr<VertexArray> &va, uint32_t count) const
     {
 
-        if(count == 0)
+        if (count == 0)
         {
             glDrawElements(GL_TRIANGLES, va->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
         }
@@ -40,4 +38,8 @@ namespace Airwave
         }
     }
 
-} // namespace Airwave
+    void OpenGLRendererAPI::OnViewportResize(uint32_t width, uint32_t height) const
+    {
+        glViewport(0, 0, width, height);
+    }
+}

@@ -13,8 +13,11 @@ namespace Airwave {
 
 		virtual ~Camera();
 
+		virtual void Update(float deltaTime) { }
+
 		glm::mat4 GetViewMatrix() { return glm::lookAt(m_Position, m_Position + (glm::cross(m_Up, m_Right)), m_Up); }
 		virtual glm::mat4 GetProjectionMatrix() { return glm::identity<glm::mat4>(); }
+		virtual void SetProjectionMatrix(float fov, float aspect, float near, float far) { }
 
 		virtual void ReSetCamera();	//重置摄像机
 		virtual void ScaleZoom(float offset) { }

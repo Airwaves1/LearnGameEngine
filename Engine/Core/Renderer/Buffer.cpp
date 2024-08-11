@@ -92,7 +92,6 @@ namespace Airwave
         {
             element.SetOffset(m_Stride);
             m_Stride += element.GetSize();
-            LOG_DEBUG("Element Offset: {0}, Element Size: {1}", element.GetOffset(), element.GetSize());
         }
     }
 

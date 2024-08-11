@@ -7,6 +7,8 @@
 
 #include "Utils/Log.h"
 
+#include <glad/glad.h>
+
 namespace Airwave
 {
 
@@ -20,6 +22,9 @@ namespace Airwave
 
     Application::Application()
     {
+        // 日志系统初始化
+        Airwave::Log::Init();
+
         AIRWAVE_ASSERT(!s_Instance, "Application already exists!");
         s_Instance = this;
 
@@ -47,43 +52,49 @@ namespace Airwave
 
         while (this->b_Running)
         {
+            if (b_Paused)
+            {
+                continue;
+            }
+
+            //################## 计算DeltaTime ##################
             m_DeltaTime = std::chrono::duration<float>(std::chrono::steady_clock::now() - m_LastTimePoint).count();
             m_LastTimePoint = std::chrono::steady_clock::now();
 
-            for (std::shared_ptr<Layer> layer : m_LayerStack)
-                layer->OnUpdate(m_DeltaTime);
 
+            // ################## 渲染 ##################
+            for (std::shared_ptr<Layer> layer : m_LayerStack)
+            {
+                if (layer->IsEnabled())
+                {
+                    layer->OnUpdate(m_DeltaTime);
+                    layer->OnRender();
+                }
+            }
+
+
+            // ################## ImGui ##################
             m_ImGuiLayer->Begin();
             for (std::shared_ptr<Layer> layer : m_LayerStack)
-                layer->OnImGuiRender(m_DeltaTime);
+            {
+                if (layer->IsEnabled())
+                {
+                    layer->OnImGuiRender(m_DeltaTime);
+                }
+            }
             m_ImGuiLayer->End();
+
 
             m_Window->OnUpdate();
         }
-    }
 
-    void Application::OnEvent(Event &e)
-    {
-        EventDispatcher dispatcher(e);
-
-        // 1. 当接受窗口来的Event时, 首先判断是否是窗口关闭的事件
-        //  Dispatch函数只有在Event类型跟模板T匹配时, 才响应事件
-        //  std::bind其实是把函数和对应的参数绑定的一起
-        dispatcher.Dispatch<WindowCloseEvent>(std::bind(&Application::OnWindowClose, this, std::placeholders::_1));
-
-        // 2. 否则才传递到layer来执行事件, 逆序遍历是为了让ImGuiLayer最先收到Event
-        for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
-        {
-            (*--it)->OnEvent(e);
-            if (e.IsHandled())
-                break;
-        }
+        LOG_INFO("Application is closed!");
     }
 
     void Application::PushLayer(std::shared_ptr<Layer> layer)
     {
         m_LayerStack.PushLayer(layer);
-        layer->OnAttach();
+        // layer->OnAttach();
     }
 
     std::shared_ptr<Layer> Application::PopLayer()
@@ -91,10 +102,39 @@ namespace Airwave
         return m_LayerStack.PopLayer();
     }
 
+    void Application::OnEvent(Event &e)
+    {
+        EventDispatcher dispatcher(e);
+
+        dispatcher.Dispatch<WindowCloseEvent>(std::bind(&Application::OnWindowClose, this, std::placeholders::_1));
+        dispatcher.Dispatch<WindowResizeEvent>(std::bind(&Application::OnWindowResize, this, std::placeholders::_1));
+
+        // 逆序遍历是为了让ImGuiLayer最先收到Event
+        for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
+        {
+            if (e.IsHandled())
+                break;
+            if ((*--it)->IsEnabled())
+                (*it)->OnEvent(e);
+        }
+    }
+
     bool Application::OnWindowClose(WindowCloseEvent &e)
     {
         this->b_Running = false;
         return true;
+    }
+
+    bool Application::OnWindowResize(WindowResizeEvent &e)
+    {
+        if (e.GetWindowWidth() == 0 || e.GetWindowHeight() == 0)
+        {
+            this->b_Paused = true;
+            return false;
+        }
+        this->b_Paused = false;
+        Renderer::OnViewportResize(m_Window->GetWidth(), m_Window->GetHeight());
+        return false;
     }
 
 } // namespace Airawve

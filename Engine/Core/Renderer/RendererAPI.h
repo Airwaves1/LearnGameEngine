@@ -24,6 +24,8 @@ namespace Airwave
         virtual void SetClearColor(const glm::vec4 &) const = 0;
         virtual void DrawIndexed(const std::shared_ptr<VertexArray> &, uint32_t count) const = 0; // count为0则绘制整个IndexBuffer
 
+        virtual void OnViewportResize(uint32_t width, uint32_t height) const = 0;
+
         inline static APIType GetAPIType() { return s_CurType; }
         inline static void SetAPIType(APIType type) { s_CurType = type; }
 

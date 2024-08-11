@@ -16,13 +16,25 @@ namespace Airwave{
 	{
 	}
 
+    void PerspectiveCamera::Update(float deltaTime)
+    {
+		UpdateCameraVectors();
+		
+    }
 
-	glm::mat4 PerspectiveCamera::GetProjectionMatrix()
+    glm::mat4 PerspectiveCamera::GetProjectionMatrix()
 	{
 		return glm::perspective(glm::radians(m_FOV), m_Aspect, m_Near, m_Far);
 	}
 
-	void PerspectiveCamera::ScaleZoom(float offset)
+    void PerspectiveCamera::SetProjectionMatrix(float fov, float aspect, float, float)
+    {
+		m_FOV = fov;
+		m_Aspect = aspect;
+		
+    }
+
+    void PerspectiveCamera::ScaleZoom(float offset)
 	{
 		auto front = glm::cross(m_Up, m_Right);
 		m_Position += front * offset;

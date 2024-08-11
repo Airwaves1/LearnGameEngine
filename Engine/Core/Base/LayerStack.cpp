@@ -35,6 +35,7 @@ namespace Airwave
 		{
 			std::shared_ptr<Layer> top = m_Stack[0];
 			m_Stack.erase(m_Stack.begin(), m_Stack.begin() + 1);
+			top->OnDetach();
 			return top;
 		}
 		else
@@ -45,6 +46,10 @@ namespace Airwave
 	{
 		auto it = std::find(m_Stack.begin(), m_Stack.end(), overlay);
 		if (it != m_Stack.end())
+		{
 			m_Stack.erase(it);
+			overlay->OnDetach();
+		}
+		
 	}
 }

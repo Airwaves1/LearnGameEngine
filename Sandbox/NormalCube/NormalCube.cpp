@@ -7,7 +7,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "ECS/UUID.h"
 #include "Geometry/GeometryUtils.h"
 #include "Renderer/Renderer.h"
 
@@ -22,9 +21,6 @@ public:
         auto width = Airwave::Application::Get().GetWindow().GetWidth();
         auto height = Airwave::Application::Get().GetWindow().GetWidth();
 
-        auto uuid = Airwave::UUID::Generate();
-        LOG_INFO("UUID: {0}", uuid.ToString());
-
         m_Camera = std::make_shared<Airwave::PerspectiveCamera>(glm::radians(65.0f), width / height, 0.1f, 10000.0f);
         m_Camera->SetPosition({0.0f, 0.0f, 15.0f});
 
@@ -34,12 +30,9 @@ public:
 
         glm::vec3 uniformColor = {0.8f, 0.3f, 0.6f};
 
-
         std::vector<Airwave::AWVertex> vertices;
         std::vector<uint32_t> indices;
-        Airwave::GeometryUtils::CreateCube(vertices, indices, 1.0f, 1.0f, 1, 3,3,3);
-        // Airwave::GeometryUtils::CreatePlane(vertices, indices, 1.0f, 1.0f, 1, 1);
-        // Airwave::GeometryUtils::CreateSphere(vertices, indices, 1.0f, 32, 32);
+        Airwave::GeometryUtils::CreateCube(vertices, indices, 1.0f, 1.0f, 1, 3, 3, 3);
 
         auto vertexData = Airwave::GeometryUtils::ConvertAWVertexToFloatArray(vertices);
 
@@ -61,11 +54,11 @@ public:
 
     void OnUpdate(float deltaTime) override
     {
-        glViewport(0, 0, Airwave::Application::Get().GetWindow().GetWidth(), Airwave::Application::Get().GetWindow().GetHeight());
         Airwave::RenderCommand::SetClearColor({0.2, 0.2, 0.2, 1.0});
         Airwave::RenderCommand::Clear();
-        //线框模式
-        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+        float aspectRatio = (float)Airwave::Application::Get().GetWindow().GetWidth() / (float)Airwave::Application::Get().GetWindow().GetHeight();
+        m_Camera->SetProjectionMatrix(glm::radians(65.0f), aspectRatio, 0.1f, 10000.0f);
 
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, -10.0f));
@@ -110,7 +103,6 @@ private:
 
     std::shared_ptr<Airwave::VertexArray> m_VertexArray;
 
-    uint32_t m_vao;
     float m_Rotation = 0.0f;
 };
 

@@ -24,7 +24,7 @@ namespace Airwave
 		std::vector<std::shared_ptr<Layer>>::iterator end() {	return m_Stack.end(); }
 		
 	private:
-		std::vector<std::shared_ptr<Layer>>m_Stack;
+		std::vector<std::shared_ptr<Layer>> m_Stack;
 		std::vector<std::shared_ptr<Layer>>::iterator curStackItr;
 	};
 }

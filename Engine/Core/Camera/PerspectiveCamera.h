@@ -12,7 +12,10 @@ namespace Airwave
         PerspectiveCamera(float fov, float aspect, float near, float far);
         ~PerspectiveCamera();
 
+        virtual void Update(float deltaTime) override;
+
         virtual glm::mat4 GetProjectionMatrix() override;
+        virtual void SetProjectionMatrix(float fov, float aspect, float near, float far) override;
         virtual void ScaleZoom(float offset) override;
 
     public:

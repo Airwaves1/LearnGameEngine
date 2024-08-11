@@ -32,3 +32,5 @@
 
 // Entry Point
 #include "Application/EntryPoint.h"
+
+#define app Airwave::Application::Get()

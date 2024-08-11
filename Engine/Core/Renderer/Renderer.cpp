@@ -1,10 +1,11 @@
 #include "Renderer/Renderer.h"
 #include "Renderer/RenderCommand.h"
+#include "Renderer.h"
 
 namespace Airwave
 {
 
-    Renderer::SceneData *Renderer::s_SceneData = new Renderer::SceneData(); 
+    Renderer::SceneData *Renderer::s_SceneData = new Renderer::SceneData();
 
     void Renderer::Init()
     {
@@ -29,5 +30,8 @@ namespace Airwave
 
         RenderCommand::DrwaIndexed(va);
     }
-
-}
+    void Renderer::OnViewportResize(uint32_t width, uint32_t height)
+    {
+        RenderCommand::OnViewportResize(width, height);
+    }
+} // namespace Airwave

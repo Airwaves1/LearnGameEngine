@@ -13,6 +13,8 @@ namespace Airwave
         static void Clear();
         static void SetClearColor(const glm::vec4 &color);
 
+        static void OnViewportResize(uint32_t width, uint32_t height);
+
     private:
         static Airwave::RendererAPI* s_RendererAPI;
     };

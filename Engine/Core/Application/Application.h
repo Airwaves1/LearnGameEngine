@@ -12,6 +12,7 @@ namespace Airwave
 {
     class Event;
     class WindowCloseEvent;
+    class WindowResizeEvent;
 
     class Application
     {
@@ -32,6 +33,7 @@ namespace Airwave
 
     private:
         bool OnWindowClose(WindowCloseEvent &e);
+        bool OnWindowResize(WindowResizeEvent &e);
 
     private:
         static Application *s_Instance;
@@ -40,6 +42,8 @@ namespace Airwave
         std::shared_ptr<ImGuiLayer> m_ImGuiLayer;
 
         bool b_Running = true;
+        bool b_Paused = false;
+
         LayerStack m_LayerStack;
 
 		std::chrono::time_point<std::chrono::steady_clock> m_StartTimePoint;
