@@ -3,9 +3,9 @@
 
 namespace Airwave
 {
-    Window* Window::Create(const WindowProps& props)
+    Window* Window::Create(uint32_t width, uint32_t height, const std::string& title)
     {
-        return new WindowsWindow(props);
+        return new WindowsWindow({width, height, title});
     }
 
 }

@@ -25,12 +25,12 @@ namespace Airwave{
 	class WindowResizeEvent :public Event
 	{
 	public:
-		WindowResizeEvent(int height, int width) :m_Height(height), m_Width(width) {}
+		WindowResizeEvent(int width, int height) :m_Height(height), m_Width(width) {}
 		EVENT_CLASS_TYPE(WindowResized)
 		EVENT_CLASS_GET_CATEGORY(EventCategoryApplication)
 
-		inline int GetWindowHeight() { return m_Height; }
 		inline int GetWindowWidth() { return m_Width; }
+		inline int GetWindowHeight() { return m_Height; }
 		std::string ToString() const override
 		{
 			std::stringstream a;

@@ -110,14 +110,18 @@ class SandboxApp : public Airwave::Application
 {
 
 public:
-    SandboxApp()
+    void OnConfiguration(Airwave::AppSettings *settings) override
     {
-        PushLayer(std::make_shared<ExampleLayer>());
+        settings->width = 1280;
+        settings->height = 720;
+        settings->title = "TextureCube";
     }
 
-    ~SandboxApp()
+    void OnInit() override
     {
+        m_LayerStack.PushLayer(std::make_shared<ExampleLayer>());
     }
+    
 };
 
 Airwave::Application *Airwave::CreateApplication()

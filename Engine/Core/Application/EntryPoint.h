@@ -12,7 +12,11 @@ int main(int argc, char **argv)
     // LOG_INFO("Airwave Engine Log System Initialized");
     auto app = Airwave::CreateApplication();
 
-    app->Run();
+    app->Start(argc, argv);
+
+    app->MainLoop();
+    
+    app->Stop();
 
     delete app;
 

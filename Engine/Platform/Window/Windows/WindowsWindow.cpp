@@ -8,7 +8,6 @@
 #include <glfw/glfw3.h>
 #include "Graphics/OpenGL/OpenGLContext.h"
 
-
 namespace Airwave
 {
 
@@ -19,9 +18,9 @@ namespace Airwave
         LOG_ERROR("GLFW Error ({0}): {1}", error, description);
     }
 
-    WindowsWindow::WindowsWindow(const WindowProps &props)
+    WindowsWindow::WindowsWindow(uint32_t width, uint32_t height, const std::string &title)
     {
-        Init(props);
+        Init(width, height, title);
     }
 
     WindowsWindow::~WindowsWindow()
@@ -29,13 +28,11 @@ namespace Airwave
         Shutdown();
     }
 
-    void WindowsWindow::Init(const WindowProps &props)
+    void WindowsWindow::Init(uint32_t width, uint32_t height, const std::string &title)
     {
-        m_Data.Title = props.Title;
-        m_Data.Width = props.Width;
-        m_Data.Height = props.Height;
-
-        LOG_INFO("Creating window {0} ({1}, {2})", props.Title, props.Width, props.Height);
+        m_Data.Title = title;
+        m_Data.Width = width;
+        m_Data.Height = height;
 
         if (!s_GLFWInitialized)
         {
@@ -45,7 +42,7 @@ namespace Airwave
             s_GLFWInitialized = true;
         }
 
-        m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
+        m_Window = glfwCreateWindow((int)width, (int)height, title.c_str(), nullptr, nullptr);
 
         // 设置窗口居中
         GLFWmonitor *monitor = glfwGetPrimaryMonitor();
@@ -59,14 +56,23 @@ namespace Airwave
         // Set GLFW callbacks
         glfwSetWindowSizeCallback(m_Window, [](GLFWwindow *window, int width, int height)
                                   {
-                WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-                data.Width = width;
-                data.Height = height;
+                                      WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
+                                      data.Width = width;
+                                      data.Height = height;
 
-                WindowResizeEvent event(width, height);
-                data.EventCallback(event);
-                // LOG_INFO("WindowResizeEvent: width = {0}, height = {1}", width, height);
-                 });
+                                      WindowResizeEvent event(width, height);
+                                      data.EventCallback(event);
+                                  });
+
+        glfwSetFramebufferSizeCallback(m_Window, [](GLFWwindow *window, int width, int height)
+                                       {
+                                           WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
+                                           data.Width = width;
+                                           data.Height = height;
+                                           glViewport(0, 0, width, height);
+                                        //    WindowResizeEvent event(width, height);
+                                        //    data.EventCallback(event);
+                                           LOG_INFO("glfwSetFramebufferSizeCallback: width = {0}, height = {1}", width, height); });
 
         glfwSetWindowCloseCallback(m_Window, [](GLFWwindow *window)
                                    {
@@ -103,11 +109,9 @@ namespace Airwave
 
         glfwSetCharCallback(m_Window, [](GLFWwindow *window, unsigned int keycode)
                             {
-                WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-                KeyTypedEvent event(keycode);
-                data.EventCallback(event); 
-                
-                });
+                                WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
+                                KeyTypedEvent event(keycode);
+                                data.EventCallback(event); });
 
         glfwSetMouseButtonCallback(m_Window, [](GLFWwindow *window, int button, int action, int mods)
                                    {
@@ -138,20 +142,18 @@ namespace Airwave
 
         glfwSetCursorPosCallback(m_Window, [](GLFWwindow *window, double xPos, double yPos)
                                  {
-                WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-                MouseMovedEvent event((float)xPos, (float)yPos);
-                data.EventCallback(event);
-                // LOG_INFO("MouseMovedEvent: xPos = {0}, yPos = {1}", xPos, yPos);
-                 });
+                                     WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
+                                     MouseMovedEvent event((float)xPos, (float)yPos);
+                                     data.EventCallback(event);
+                                     // LOG_INFO("MouseMovedEvent: xPos = {0}, yPos = {1}", xPos, yPos);
+                                 });
 
         // Set GLFW error callback
         glfwSetErrorCallback(GLFWErrorCallback);
 
-
         // Load OpenGL functions using Glad
         m_Context = new OpenGLContext(m_Window);
         m_Context->Init();
-
     }
 
     void WindowsWindow::Shutdown()

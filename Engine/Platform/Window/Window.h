@@ -6,19 +6,7 @@
 
 namespace Airwave
 {
-    struct WindowProps
-    {
-        std::string Title;
-        uint32_t Width;
-        uint32_t Height;
 
-        WindowProps(const std::string &title = "Airwave Engine",
-                    uint32_t width = 1280,
-                    uint32_t height = 720)
-            : Title(title), Width(width), Height(height)
-        {
-        }
-    };
 
     class Window
     {
@@ -39,7 +27,7 @@ namespace Airwave
 
         virtual void *GetNativeWindow() const = 0;
 
-        static Window *Create(const WindowProps &props = WindowProps());
+        static Window *Create(uint32_t width = 1280, uint32_t height = 720, const std::string &title = "Airwave Engine");
     };
 
 } // namespace Airwave

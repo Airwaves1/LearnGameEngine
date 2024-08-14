@@ -109,13 +109,16 @@ private:
 class Sandbox : public Airwave::Application
 {
 public:
-    Sandbox()
+    void OnConfiguration(Airwave::AppSettings *settings) override
     {
-        PushLayer(std::make_shared<ExampleLayer>());
+        settings->width = 1280;
+        settings->height = 720;
+        settings->title = "Normal Cube";
     }
 
-    ~Sandbox()
+    void OnInit() override
     {
+        PushLayer(std::make_shared<ExampleLayer>());
     }
 };
 

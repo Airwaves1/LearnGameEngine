@@ -12,7 +12,7 @@ namespace Airwave {
     {
 
     public:
-        WindowsWindow(const WindowProps &props);
+        WindowsWindow(uint32_t width, uint32_t height, const std::string &title);
         virtual ~WindowsWindow();
 
         void OnUpdate() override;
@@ -28,7 +28,7 @@ namespace Airwave {
         inline void* GetNativeWindow() const override { return m_Window; }
 
     private:
-        virtual void Init(const WindowProps &props);
+        virtual void Init(uint32_t width, uint32_t height, const std::string &title);
         virtual void Shutdown();
 
     private:
