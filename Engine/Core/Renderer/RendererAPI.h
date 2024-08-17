@@ -1,9 +1,8 @@
 #ifndef RENDERERAPI_H
 #define RENDERERAPI_H
 
-#include "Utils/Common.h"
 #include <glm/glm.hpp>
-#include "Renderer/VertexArray.h"
+#include "Renderer/Buffers/VertexArray.h"
 
 namespace Airwave
 {

@@ -1,6 +1,7 @@
 #include "Application/Application.h"
 
 #include "Utils/Common.h"
+#include "Utils/Log.h"
 #include "Utils/Time.h"
 #include "Utils/FileUtils.h"
 
@@ -23,12 +24,15 @@
 #include "Renderer/RenderCommand.h"
 #include "Renderer/Renderer.h"
 
-#include "Renderer/VertexArray.h"
-#include "Renderer/Buffer.h"
-#include "Renderer/Shader.h"
-#include "Renderer/ShaderLibrary.h"
-#include "Renderer/Texture.h"
-#include "Renderer/FrameBuffer.h"
+#include "Renderer/Buffers/VertexArray.h"
+#include "Renderer//Buffers/Buffer.h"
+#include "Renderer/Buffers/FrameBuffer.h"
+
+#include "Renderer/Shaders/Shader.h"
+#include "Renderer/Shaders/ShaderLibrary.h"
+
+#include "Renderer/Textures/Texture.h"
+#include "Renderer/Textures/Texture2D.h"
 
 // Entry Point
 #include "Application/EntryPoint.h"

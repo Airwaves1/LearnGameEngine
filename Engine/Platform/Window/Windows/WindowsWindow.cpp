@@ -53,6 +53,8 @@ namespace Airwave
         glfwSetWindowUserPointer(m_Window, &m_Data);
         SetVSync(true);
 
+        glfwWindowHint(GLFW_SAMPLES, 16);
+
         // Set GLFW callbacks
         glfwSetWindowSizeCallback(m_Window, [](GLFWwindow *window, int width, int height)
                                   {

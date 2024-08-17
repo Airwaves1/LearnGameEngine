@@ -1,7 +1,7 @@
 #ifndef OPENGL_VERTEX_ARRAY_H
 #define OPENGL_VERTEX_ARRAY_H
 
-#include "Renderer/VertexArray.h"
+#include "Renderer/Buffers/VertexArray.h"
 
 namespace Airwave
 {

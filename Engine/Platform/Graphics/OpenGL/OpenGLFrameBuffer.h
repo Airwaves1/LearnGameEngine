@@ -1,69 +1,52 @@
-#ifndef OPENGL_FRAME_BUFFER_H
-#define OPENGL_FRAME_BUFFER_H
+#ifndef OPENGL_FRAMEBUFFER_H
+#define OPENGL_FRAMEBUFFER_H
 
-#include "Renderer/FrameBuffer.h"
-#include <glad/glad.h>
-#include "Graphics/OpenGL/OpenGLShader.h"
+#include "Renderer/Buffers/Framebuffer.h"
+#include "Graphics/OpenGL/OpenGLTexture.h"
+#include <memory>
 
 namespace Airwave
 {
-    class OpenGLFrameBuffer : public FrameBuffer
+    class OpenGLFramebuffer : public Framebuffer
     {
     public:
-        // OpenGLFrameBuffer();
-        OpenGLFrameBuffer(const FrameBufferSpecification &spec);
-        ~OpenGLFrameBuffer() override;
+        OpenGLFramebuffer(uint32_t width, uint32_t height, FramebufferSpecification specification);
+        virtual ~OpenGLFramebuffer();
 
-        GLuint GetColorAttachmentId(uint32_t id);
-
-        virtual uint32_t GetFrameBufferId() const { return m_FramebufferId; }
+        void Invalidate();
 
         virtual void Bind() override;
         virtual void Unbind() override;
 
-        virtual void SetColorAttachmentTextureId(uint32_t textureID, uint32_t value) override;
-        // 获取颜色附件的ID，返回的时void*类型，是为了兼容不同类型的纹理
-        virtual uint32_t GetColorAttachmentTextureId() override;
+        virtual void Resize(uint32_t width, uint32_t height) override;
+        virtual void SetMSAA(bool enable) override;
 
-        // 调整颜色附件的纹理大小，用于再帧缓冲尺寸发生变化时更新纹理大小
-        virtual void ResizeColorAttachment(uint32_t width, uint32_t height) override;
+        virtual uint32_t GetFramebufferID() const override { return m_RendererID; }
+        virtual std::vector<uint32_t> GetColorAttachmentIDs() const override { return m_ColorAttachmentIDs; }
+        virtual uint32_t GetDepthAttachmentID() const override { return m_DepthAttachmentID; }
+        virtual uint32_t GetStencilAttachmentID() const override { return m_StencilAttachmentID; }
 
-        // 读取帧缓冲中特定位置的像素值，用于调试或者后期处理或者其他功能
-        virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) override;
+        // 添加纹理附件
+        void AttachColorTexture(uint32_t index, const std::shared_ptr<OpenGLTexture2D> &texture);
+        void AttachDepthTexture(const std::shared_ptr<OpenGLTexture2D> &texture);
+        void AttachStencilTexture(const std::shared_ptr<OpenGLTexture2D> &texture);
 
-        // 设置多重采用MSAA上下文，如果启用MSAA，则需要设置相应的帧缓冲或者纹理
-        virtual void SetUpMSAAContext() override;
+        // 将多重采样的纹理附件转换为普通纹理附件
+        virtual void BlitMSAAToDefaultFramebuffer(const uint32_t resolveFramebufferID) const override;
 
-        // 解析MSAA纹理，将其内容从多重采样纹理复制到普通纹理
-        virtual void ResolveMSAAContext(uint32_t width, uint32_t height) override;
 
-        virtual const FrameBufferSpecification &GetSpecification() const override { return m_Specification; }
-
-        // 获取OpenGLShader对象
-        OpenGLShader *GetOpenGLShader();
+        // 读取像素，获取单点颜色
+        virtual uint32_t ReadPixel(uint32_t attachmentIndex, int x, int y) override;
 
     private:
-    private:
-        GLuint m_FramebufferId;
+        uint32_t m_RendererID {0};
+        std::vector<uint32_t> m_ColorAttachmentIDs {};
+        uint32_t m_ColorAttachmentID {0};
+        uint32_t m_DepthAttachmentID {0};
+        uint32_t m_StencilAttachmentID {0};
 
-        // 临时帧缓冲和纹理的 ID
-        GLuint m_FramebufferTempId;
-        GLuint m_FramebufferTempTex;
-
-        // 存储颜色附件纹理的ID
-        std::vector<uint32_t> m_ColorAttachmentTexIndices;
-
-        // 存储缓冲对象RBO的ID
-        std::vector<int> m_RboAttachmentIndices;
-
-        // 帧缓冲的规格
-        FrameBufferSpecification m_Specification;
-
-        // 是否启用多重采样
-
-        bool b_EnableMSAA;
+        std::shared_ptr<Framebuffer> m_ResolveFramebuffer;
     };
-
 } // namespace Airwave
 
-#endif // OPENGL_FRAME_BUFFER_H
+#endif // OPENGL_FRAMEBUFFER_H

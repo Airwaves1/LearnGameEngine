@@ -2,7 +2,7 @@
 #define SHADER_LIBRARY_H
 
 #include "Utils/Common.h"
-#include "Renderer/Shader.h"
+#include "Renderer/Shaders/Shader.h"
 
 namespace Airwave
 {

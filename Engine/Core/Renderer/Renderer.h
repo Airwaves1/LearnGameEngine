@@ -2,9 +2,9 @@
 #define RENDERER_H
 
 #include "Utils/Common.h"
-#include "Renderer/VertexArray.h"
+#include "Renderer/Buffers/VertexArray.h"
 #include <glm/glm.hpp>
-#include "Renderer/Shader.h"
+#include "Renderer/Shaders/Shader.h"
 #include "Renderer/RendererAPI.h"
 #include "Camera/Camera.h"
 

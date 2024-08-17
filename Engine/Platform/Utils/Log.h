@@ -1,9 +1,6 @@
 #ifndef LOG_H
 #define LOG_H
 
-
-
-#include "Utils/Common.h"
 #include "spdlog/common.h"
 
 namespace Airwave {

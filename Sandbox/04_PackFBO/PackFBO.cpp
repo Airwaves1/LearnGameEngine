@@ -7,8 +7,11 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <memory>
 
+#include "Utils/Log.h"
 #include "imgui.h"
+
 class ExampleLayer : public Airwave::Layer
 {
 public:
@@ -33,8 +36,8 @@ public:
         m_ShaderLibrary->Load("Screen", ASSETS_SHADER_DIR "00/Screen.vert", ASSETS_SHADER_DIR "00/Screen.frag");
 
         // 构建纹理
-        m_Texture_0 = Airwave::Texture2D::Create(ASSETS_TEXTURE_DIR "awesomeface.png");
-        m_Texture_1 = Airwave::Texture2D::Create(ASSETS_TEXTURE_DIR "R-C.jpeg");
+        m_Texture_0 = Airwave::Texture2D::Create(ASSETS_TEXTURE_DIR "R-C.jpeg");
+        m_Texture_1 = Airwave::Texture2D::Create(ASSETS_TEXTURE_DIR "container2.png");
 
         auto shader = m_ShaderLibrary->Get("TextureCube");
         shader->Bind();
@@ -66,7 +69,7 @@ public:
         }
         m_VertexArray->Unbind();
 
-        // 屏幕四边形   
+        // 屏幕四边形
         std::vector<float> quadVertices = {
             -1.0f, 1.0f, 0.0f, 1.0f,
             -1.0f, -1.0f, 0.0f, 0.0f,
@@ -86,30 +89,8 @@ public:
             m_QuadVertexArray->AddVertexBuffer(vertexBuffer);
         }
 
-        // 创建帧缓冲
-        glGenFramebuffers(1, &m_FBO);
-        glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
-
-        // 创建颜色附件
-        glGenTextures(1, &m_TextureColorbuffer);
-        glBindTexture(GL_TEXTURE_2D, m_TextureColorbuffer);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, app.GetWindow().GetWidth(), app.GetWindow().GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_TextureColorbuffer, 0);
-
-        // 创建渲染缓冲对象
-        glGenRenderbuffers(1, &m_RBO);
-        glBindRenderbuffer(GL_RENDERBUFFER, m_RBO);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, app.GetWindow().GetWidth(), app.GetWindow().GetHeight());
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_RBO);
-
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        {
-            LOG_ERROR("Framebuffer is incomplete!");
-        }
-
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        m_Framebuffer = Airwave::Framebuffer::Create(app.GetWindow().GetWidth(), app.GetWindow().GetHeight(), {1, 1, 0, true});
+        m_ResolveFramebuffer = Airwave::Framebuffer::Create(app.GetWindow().GetWidth(), app.GetWindow().GetHeight(), {1, 1, 0, false});
     }
 
     void OnDetach() override
@@ -136,7 +117,7 @@ public:
     {
         Airwave::Renderer::BeginScene(m_Camera);
         {
-            glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
+            m_Framebuffer->Bind();
             glEnable(GL_DEPTH_TEST);
 
             Airwave::RenderCommand::Clear();
@@ -145,22 +126,32 @@ public:
             m_Texture_1->Bind(1);
             Airwave::Renderer::Submit(m_ShaderLibrary->Get("TextureCube"), m_VertexArray, m_Modle);
 
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            glDisable(GL_DEPTH_TEST);
+            m_Framebuffer->Unbind();
             Airwave::RenderCommand::Clear();
+
+            // 将解析后的Framebuffer纹理绘制到屏幕上
+            m_Framebuffer->BlitMSAAToDefaultFramebuffer(m_ResolveFramebuffer->GetFramebufferID());
+            auto finalTexture = m_ResolveFramebuffer->GetColorAttachmentIDs()[0];
+
             m_ShaderLibrary->Get("Screen")->Bind();
             m_QuadVertexArray->Bind();
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, m_TextureColorbuffer);
+            glBindTexture(GL_TEXTURE_2D, finalTexture);
             glDrawArrays(GL_TRIANGLES, 0, 6);
+
         }
         Airwave::Renderer::EndScene();
     }
 
     void OnImGuiRender(float deltaTime) override
     {
-                //检测帧率FPS
-        m_FPS = 1.0f / deltaTime;
+        static int flag = 0.0f;
+        flag++;
+        if (flag % 36 == 0)
+        {
+            m_FPS = 1.0f / deltaTime;
+        }
+
         ImGui::Begin("Settings");
         ImGui::Text("FPS: %.2f", m_FPS);
         ImGui::End();
@@ -168,15 +159,7 @@ public:
 
     void OnFrameBufferResize(int width, int height)
     {
-        glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
-        
-        glBindTexture(GL_TEXTURE_2D, m_TextureColorbuffer);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-
-        glBindRenderbuffer(GL_RENDERBUFFER, m_RBO);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        m_Framebuffer->Resize(width, height);
     }
 
 private:
@@ -190,9 +173,9 @@ private:
     std::shared_ptr<Airwave::VertexArray> m_VertexArray;
 
     std::shared_ptr<Airwave::VertexArray> m_QuadVertexArray;
-    uint32_t m_FBO;
-    uint32_t m_TextureColorbuffer;
-    uint32_t m_RBO;
+
+    std::shared_ptr<Airwave::Framebuffer> m_Framebuffer;
+    std::shared_ptr<Airwave::Framebuffer> m_ResolveFramebuffer;
 
     float m_Rotation = 0.0f;
     glm::mat4 m_Modle;
@@ -207,7 +190,7 @@ public:
     {
         settings->width = 1280;
         settings->height = 720;
-        settings->title = "FrameBuffer";
+        settings->title = "PackFBO";
     }
 
     void OnInit() override

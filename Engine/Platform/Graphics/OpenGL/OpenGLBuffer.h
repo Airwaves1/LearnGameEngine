@@ -1,7 +1,7 @@
 #ifndef OPENGL_BUFFER_H
 #define OPENGL_BUFFER_H
 
-#include "Renderer/Buffer.h"
+#include "Renderer/Buffers/Buffer.h"
 #include "Utils/Common.h"
 #include <glad/glad.h>
 

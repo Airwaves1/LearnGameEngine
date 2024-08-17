@@ -1,4 +1,4 @@
-#include "Renderer/ShaderLibrary.h"
+#include "Renderer/Shaders/ShaderLibrary.h"
 
 namespace Airwave
 {

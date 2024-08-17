@@ -1,7 +1,7 @@
 #ifndef VERTEX_ARRAY_H
 #define VERTEX_ARRAY_H
 
-#include "Renderer/Buffer.h"
+#include "Renderer/Buffers/Buffer.h"
 #include <memory>
 
 namespace Airwave

@@ -2,7 +2,7 @@
 
 #include "Utils/Common.h"
 #include "glad/glad.h"
-#include "Renderer/Buffer.h"
+#include "Renderer/Buffers/Buffer.h"
 
 namespace Airwave
 {

@@ -1,4 +1,4 @@
-#include "Renderer/Shader.h"
+#include "Renderer/Shaders/Shader.h"
 #include "Utils/Common.h"
 
 #include "Renderer/Renderer.h"

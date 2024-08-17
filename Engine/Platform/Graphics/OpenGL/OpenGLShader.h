@@ -1,7 +1,7 @@
 #ifndef OPENGL_SHADER_H
 #define OPENGL_SHADER_H
 
-#include "Renderer/Shader.h"
+#include "Renderer/Shaders/Shader.h"
 
 namespace Airwave
 {

@@ -1,202 +1,167 @@
-#include "Graphics/OpenGL/OpenGLFrameBuffer.h"
-#include "Graphics/OpenGL/OpenGLShader.h"
-#include "Utils/Common.h"
+#include "OpenGLFrameBuffer.h"
+#include <glad/glad.h>
+#include "Renderer/Buffers/FrameBuffer.h"
+#include "Utils/Log.h"
 
 namespace Airwave
 {
-    OpenGLFrameBuffer::OpenGLFrameBuffer(const FrameBufferSpecification &spec)
-        : FrameBuffer(spec.width, spec.height)
+    OpenGLFramebuffer::OpenGLFramebuffer(uint32_t width, uint32_t height, FramebufferSpecification specification)
     {
-        // 创建帧缓冲对象
-        glGenFramebuffers(1, &m_FramebufferId);
-        glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferId);
+        m_Width = width;
+        m_Height = height;
+        m_Specification = specification;
 
-        // 设置是否需要开启多重采样
-        b_EnableMSAA = spec.enableMSAA;
+        Invalidate();
+    }
 
-        if (!b_EnableMSAA)
-        { // 如果不适用MSAA，使用普通纹理附件
+    OpenGLFramebuffer::~OpenGLFramebuffer()
+    {
+        if (m_RendererID)
+        {
+            glDeleteFramebuffers(1, &m_RendererID);
+        }
+        if (m_ColorAttachmentIDs.size())
+        {
+            glDeleteTextures(m_ColorAttachmentIDs.size(), m_ColorAttachmentIDs.data());
+        }
+        if (m_DepthAttachmentID)
+        {
+            glDeleteTextures(1, &m_DepthAttachmentID);
+        }
+        if (m_StencilAttachmentID)
+        {
+            glDeleteTextures(1, &m_StencilAttachmentID);
+        }
+    }
+    void OpenGLFramebuffer::Invalidate()
+    {
+        if (m_RendererID)
+        {
+            glDeleteFramebuffers(1, &m_RendererID);
+            m_RendererID = 0;
+        }
 
-            for (uint32_t i = 0; i < spec.colorAttachmentCount; i++)
+        glGenFramebuffers(1, &m_RendererID);
+        glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+
+        // Color attachments
+        m_ColorAttachmentIDs.resize(m_Specification.colorAttachmentCount);
+        glGenTextures(m_Specification.colorAttachmentCount, m_ColorAttachmentIDs.data());
+        for (uint32_t i = 0; i < m_Specification.colorAttachmentCount; i++)
+        {
+            if (m_Specification.enableMSAA)
             {
-                GLuint textureId;
-                glGenTextures(1, &textureId);
-                glBindTexture(GL_TEXTURE_2D, textureId);
-
-                // 设置纹理格式
-                if (i == 0)
-                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, spec.width, spec.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-                else
-                    glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, spec.width, spec.height, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, NULL);
-
-                // 设置纹理参数
+                glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_ColorAttachmentIDs[i]);
+                glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGB, m_Width, m_Height, GL_TRUE);
+                glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D_MULTISAMPLE, m_ColorAttachmentIDs[i], 0);
+                LOG_DEBUG("Color Attachment ID: {}", m_ColorAttachmentIDs[i]);
+            }
+            else
+            {
+                glBindTexture(GL_TEXTURE_2D, m_ColorAttachmentIDs[i]);
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-                // 将当前纹理附件附加到帧缓冲对象的颜色附件上
-                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, textureId, 0);
-
-                m_ColorAttachmentTexIndices.push_back(textureId);
-            }
-
-            // 创建深度和模板缓冲区
-            for (uint32_t i = 0; i < spec.depthAttachmentCount; i++)
-            {
-                GLuint rbo;
-                glGenRenderbuffers(1, &rbo);
-                glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-                // use a single renderbuffer object for both a depth AND stencil buffer.
-                glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, spec.width, spec.height);
-                glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-                m_RboAttachmentIndices.push_back(rbo);
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_ColorAttachmentIDs[i], 0);
             }
         }
-        else // 如果启用MSAA，则使用多重采样纹理附件
+
+        // Depth attachment, 24 bits for depth and 8 bits for stencil
+        uint32_t rbo;
+        glGenRenderbuffers(1, &rbo);
+        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+        if (m_Specification.enableMSAA)
         {
-            for (uint32_t i = 0; i < spec.colorAttachmentCount; i++)
-            {
-                GLuint textureId;
-                glGenTextures(1, &textureId);
-                glBindTexture(GL_TEXTURE_2D, textureId);
-                glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, spec.samples, GL_RGBA, spec.width, spec.height, GL_TRUE);
-                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D_MULTISAMPLE, textureId, 0);
-
-                // 使用-1来作为占位符，表示这些颜色附件在MSAA模式下暂时没有有效的纹理ID，
-                // 实际的纹理 ID 可能会在帧缓冲的解析阶段或其他处理阶段更新，以便正确使用和访问这些多重采样纹理
-                m_ColorAttachmentTexIndices.push_back(-1);
-            }
-
-            for (uint32_t i = 0; i < spec.depthAttachmentCount; i++)
-            {
-                GLuint rbo;
-                glGenRenderbuffers(1, &rbo);
-                glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-                glRenderbufferStorageMultisample(GL_RENDERBUFFER, spec.samples, GL_DEPTH24_STENCIL8, spec.width, spec.height);
-                glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-                m_RboAttachmentIndices.push_back(rbo);
-            }
+            glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, m_Width, m_Height);
         }
-
-        // 检查帧缓冲是否完整
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        else
         {
-            LOG_ERROR("Framebuffer is not complete!");
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            return;
+            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_Width, m_Height);
+        }
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+
+        GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        if (status != GL_FRAMEBUFFER_COMPLETE)
+        {
+            LOG_ERROR("Framebuffer is incomplete! Status: {}", status);
         }
 
-        glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferId);
-
-        const GLenum buffers[]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-        // 这个函数指定了用于渲染的颜色附件。
-        // 它将 buffers 数组中的附件设置为当前帧缓冲对象的绘制目标。数组中的每个附件都将被渲染操作所使用
-        glDrawBuffers(2, buffers);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    OpenGLFrameBuffer::~OpenGLFrameBuffer()
+    void OpenGLFramebuffer::Bind()
     {
-
-        for (GLuint textureId : m_ColorAttachmentTexIndices)
-        {
-            glDeleteTextures(1, &textureId);
-        }
-
-        for (GLuint rboId : m_RboAttachmentIndices)
-        {
-            glDeleteRenderbuffers(1, &rboId);
-        }
-
-        glDeleteFramebuffers(1, &m_FramebufferId);
+        glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
     }
 
-    GLuint OpenGLFrameBuffer::GetColorAttachmentId(uint32_t id)
-    {
-        return m_ColorAttachmentTexIndices[id];
-    }
-
-    void OpenGLFrameBuffer::Bind() 
-    {
-        glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferId);
-        glViewport(0, 0, m_Width, m_Height);
-    }
-
-    void OpenGLFrameBuffer::Unbind() 
+    void OpenGLFramebuffer::Unbind()
     {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    uint32_t OpenGLFrameBuffer::GetColorAttachmentTextureId()
+    uint32_t OpenGLFramebuffer::ReadPixel(uint32_t attachmentIndex, int x, int y)
     {
-        if (b_EnableMSAA)
-        {
-            // TODO
-            //  OpenGLShader* glShader = GetOpenGLShader(); // 获取当前的OpenGLShader
-            //  if(glShader)
-            //  {
-            //      // 如果当前的OpenGLShader存在，则获取当前的OpenGLShader的MSAA纹理ID
-            //      return glShader->GetMSAAColorAttachmentTextureId();
-            //  }
-        }
-
-        return m_ColorAttachmentTexIndices[0]; // 或者其他默认值
-    }
-
-    void OpenGLFrameBuffer::ResizeColorAttachment(uint32_t width, uint32_t height)
-    {
-        if (m_FramebufferId != -1)
-        {
-            m_Width = width;
-            m_Height = height;
-            glBindTexture(GL_TEXTURE_2D, m_ColorAttachmentTexIndices[0]);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-        }
-    }
-
-    int OpenGLFrameBuffer::ReadPixel(uint32_t attachmentIndex, int x, int y)
-    {
-        if (b_EnableMSAA)
-        {
-            // TODO
-        }
-        this->Bind();
+        glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
         glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
-        int pixelData;
-        glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
-        this->Unbind();
+        uint32_t pixelData;
+        glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &pixelData);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
         return pixelData;
     }
 
-    void OpenGLFrameBuffer::SetColorAttachmentTextureId(uint32_t textureID, uint32_t value)
+    void OpenGLFramebuffer::Resize(uint32_t width, uint32_t height)
     {
-        m_ColorAttachmentTexIndices[value] = textureID;
+        if (m_Width == width && m_Height == height)
+            return;
+
+        m_Width = width;
+        m_Height = height;
+        Invalidate();
     }
 
-    void OpenGLFrameBuffer::SetUpMSAAContext()
+    void OpenGLFramebuffer::SetMSAA(bool enable)
     {
-        b_EnableMSAA = true;
-        // TODO
+        m_Specification.enableMSAA = enable;
+        Invalidate();
     }
 
-    void OpenGLFrameBuffer::ResolveMSAAContext(uint32_t width, uint32_t height)
+    void OpenGLFramebuffer::AttachColorTexture(uint32_t index, const std::shared_ptr<OpenGLTexture2D> &texture)
     {
-        if (b_EnableMSAA)
+        if (index >= m_ColorAttachmentIDs.size())
         {
-            glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FramebufferId);
-            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FramebufferTempId);
-            glBlitFramebuffer(0, 0, m_Width, m_Height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-            glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferTempId);
+            LOG_ERROR("Color attachment index out of range!");
+            return;
         }
-        else
-        {
-            LOG_WARN("MSAA is not enabled, no need to resolve MSAA context");
-        }
+
+        glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, m_Specification.enableMSAA ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, texture->GetRendererID(), 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    OpenGLShader *OpenGLFrameBuffer::GetOpenGLShader()
+    void OpenGLFramebuffer::AttachDepthTexture(const std::shared_ptr<OpenGLTexture2D> &texture)
     {
-        return (OpenGLShader*)(&*(GetShader()));
+        glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texture->GetRendererID(), 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-}
+    void OpenGLFramebuffer::AttachStencilTexture(const std::shared_ptr<OpenGLTexture2D> &texture)
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_TEXTURE_2D, texture->GetRendererID(), 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    void OpenGLFramebuffer::BlitMSAAToDefaultFramebuffer(const uint32_t resolveFramebufferID) const
+    {
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, m_RendererID);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, resolveFramebufferID);
+        glBlitFramebuffer(0, 0, m_Width, m_Height, 0, 0, m_Width, m_Height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+} // namespace Airwave
