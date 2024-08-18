@@ -20,17 +20,27 @@ namespace Airwave
         if (count == 0)
             s_RendererAPI->DrawIndexed(va, va->GetIndexBuffer()->GetCount());
         else
-            s_RendererAPI->DrawIndexed(va, count);
+            s_RendererAPI->DrawIndexed(va, count); 
     }
 
-    void RenderCommand::Clear()
+    void RenderCommand::Clear(RenderClearFlag flag)
     {
-        s_RendererAPI->Clear();
+        s_RendererAPI->Clear(flag);
     }
 
     void RenderCommand::SetClearColor(const glm::vec4 &color)
     {
         s_RendererAPI->SetClearColor(color);
+    }
+
+    void RenderCommand::Enable(RenderState state)
+    {
+        s_RendererAPI->Enable(state);
+    }
+
+    void RenderCommand::Disable(RenderState state)
+    {
+        s_RendererAPI->Disable(state);
     }
 
     void RenderCommand::OnViewportResize(uint32_t width, uint32_t height)

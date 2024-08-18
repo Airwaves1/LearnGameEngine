@@ -10,6 +10,7 @@ add_library(Core
     "Renderer/RendererAPI.cpp"
     "Renderer/Renderer.cpp"
     "Renderer/RenderCommand.cpp"
+    "Renderer/RenderState.cpp"
 
     "Renderer/Buffers/FrameBuffer.cpp"
     "Renderer/Buffers/VertexArray.cpp"

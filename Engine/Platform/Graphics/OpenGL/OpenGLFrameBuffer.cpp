@@ -164,4 +164,43 @@ namespace Airwave
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
+    void OpenGLFramebuffer::RenderToFullScreenQuad(std::shared_ptr<Shader> shader)
+    {
+        if (!m_FullScreenFramebuffer)
+        {
+            m_FullScreenFramebuffer = Framebuffer::Create(m_Width, m_Height, {1, 1, 0, false});
+
+            glGenVertexArrays(1, &m_FullScreenQuadVAO);
+            glBindVertexArray(m_FullScreenQuadVAO);
+
+            float quadVertices[] = {
+                -1.0f, -1.0f, 0.0f, 0.0f,
+                1.0f, -1.0f, 1.0f, 0.0f,
+                1.0f, 1.0f, 1.0f, 1.0f,
+                1.0f, 1.0f, 1.0f, 1.0f,
+                -1.0f, 1.0f, 0.0f, 1.0f,
+                -1.0f, -1.0f, 0.0f, 0.0f};
+
+            GLuint quadVBO;
+            glGenBuffers(1, &quadVBO);
+            glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
+            glEnableVertexAttribArray(1);
+            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
+
+            glBindVertexArray(0);
+        }
+
+        BlitMSAAToDefaultFramebuffer(m_FullScreenFramebuffer->GetFramebufferID());
+
+        shader->Bind();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, m_FullScreenFramebuffer->GetColorAttachmentIDs()[0]);
+        glBindVertexArray(m_FullScreenQuadVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+
 } // namespace Airwave

@@ -38,6 +38,9 @@ namespace Airwave
         // 读取像素，获取单点颜色
         virtual uint32_t ReadPixel(uint32_t attachmentIndex, int x, int y) override;
 
+        // 渲染到全屏四边形上
+        virtual void RenderToFullScreenQuad(std::shared_ptr<Shader> shader) override;
+
     private:
         uint32_t m_RendererID {0};
         std::vector<uint32_t> m_ColorAttachmentIDs {};
@@ -45,7 +48,8 @@ namespace Airwave
         uint32_t m_DepthAttachmentID {0};
         uint32_t m_StencilAttachmentID {0};
 
-        std::shared_ptr<Framebuffer> m_ResolveFramebuffer;
+        uint32_t m_FullScreenQuadVAO {0};
+
     };
 } // namespace Airwave
 

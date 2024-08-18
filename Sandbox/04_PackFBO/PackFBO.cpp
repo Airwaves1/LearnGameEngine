@@ -5,8 +5,6 @@
 #include "Geometry/GeometryUtils.h"
 #include "Renderer/RenderCommand.h"
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include <memory>
 
 #include "Utils/Log.h"
@@ -69,28 +67,7 @@ public:
         }
         m_VertexArray->Unbind();
 
-        // 屏幕四边形
-        std::vector<float> quadVertices = {
-            -1.0f, 1.0f, 0.0f, 1.0f,
-            -1.0f, -1.0f, 0.0f, 0.0f,
-            1.0f, -1.0f, 1.0f, 0.0f,
-
-            -1.0f, 1.0f, 0.0f, 1.0f,
-            1.0f, -1.0f, 1.0f, 0.0f,
-            1.0f, 1.0f, 1.0f, 1.0f};
-
-        m_QuadVertexArray = Airwave::VertexArray::Create();
-        {
-            auto vertexBuffer = Airwave::VertexBuffer::Create(quadVertices.data(), quadVertices.size() * sizeof(float));
-            auto bufferLayout = Airwave::BufferLayout{
-                {Airwave::ShaderDataType::FLOAT2, "a_Position"},
-                {Airwave::ShaderDataType::FLOAT2, "a_TexCoord"}};
-            vertexBuffer->SetBufferLayout(bufferLayout);
-            m_QuadVertexArray->AddVertexBuffer(vertexBuffer);
-        }
-
         m_Framebuffer = Airwave::Framebuffer::Create(app.GetWindow().GetWidth(), app.GetWindow().GetHeight(), {1, 1, 0, true});
-        m_ResolveFramebuffer = Airwave::Framebuffer::Create(app.GetWindow().GetWidth(), app.GetWindow().GetHeight(), {1, 1, 0, false});
     }
 
     void OnDetach() override
@@ -118,9 +95,9 @@ public:
         Airwave::Renderer::BeginScene(m_Camera);
         {
             m_Framebuffer->Bind();
-            glEnable(GL_DEPTH_TEST);
-
+            
             Airwave::RenderCommand::Clear();
+            Airwave::RenderCommand::Enable(Airwave::RenderState::DepthTest);
 
             m_Texture_0->Bind(0);
             m_Texture_1->Bind(1);
@@ -130,15 +107,7 @@ public:
             Airwave::RenderCommand::Clear();
 
             // 将解析后的Framebuffer纹理绘制到屏幕上
-            m_Framebuffer->BlitMSAAToDefaultFramebuffer(m_ResolveFramebuffer->GetFramebufferID());
-            auto finalTexture = m_ResolveFramebuffer->GetColorAttachmentIDs()[0];
-
-            m_ShaderLibrary->Get("Screen")->Bind();
-            m_QuadVertexArray->Bind();
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, finalTexture);
-            glDrawArrays(GL_TRIANGLES, 0, 6);
-
+            m_Framebuffer->RenderToFullScreenQuad(m_ShaderLibrary->Get("Screen"));
         }
         Airwave::Renderer::EndScene();
     }
@@ -172,10 +141,7 @@ private:
 
     std::shared_ptr<Airwave::VertexArray> m_VertexArray;
 
-    std::shared_ptr<Airwave::VertexArray> m_QuadVertexArray;
-
     std::shared_ptr<Airwave::Framebuffer> m_Framebuffer;
-    std::shared_ptr<Airwave::Framebuffer> m_ResolveFramebuffer;
 
     float m_Rotation = 0.0f;
     glm::mat4 m_Modle;

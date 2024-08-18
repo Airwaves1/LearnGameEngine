@@ -8,6 +8,8 @@
 #include "Renderer/RendererAPI.h"
 #include "Camera/Camera.h"
 
+// 进行场景渲染，包括渲染的初始化，渲染的开始和结束，以及提交渲染的物体
+
 namespace Airwave
 {
     class Renderer
