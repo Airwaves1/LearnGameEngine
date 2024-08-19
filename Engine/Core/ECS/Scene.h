@@ -3,6 +3,11 @@
 
 #include "ECS/UUID.h"
 #include "entt/entity/registry.hpp"
+#include <memory>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
+
 
 /**
  *  Scene类用于管理一个场景，包含ECS系统中的所有实体和组件。它是实体管理的中心节点。
@@ -17,17 +22,56 @@ namespace Airwave
 {
     class Node;
     class Entity;
+    class System;
 
-    class Scene
+    class Scene : public std::enable_shared_from_this<Scene>
     {
     public:
+        Scene(const std::string &name = "Scene");
+
+        ~Scene() = default;
+
+        // 获取和设置场景名称
+        std::string GetName() const { return m_Name; }
+        void SetName(const std::string &name) { m_Name = name; }
+
+        // 获取场景的UUID
+        UUID GetUUID() const { return m_UUID; }
+
+        std::shared_ptr<Node> GetRootNode() const { return m_RootNode; }
+
+        // 添加和移除实体
+        std::shared_ptr<Entity> CreateEntity(const std::string &name = "Entity");
+        void RemoveEntity(std::shared_ptr<Entity> entity);
+
+        // 获取实体
+        std::shared_ptr<Entity> GetEntity(entt::entity entityHandle) const;
+
+        // 添加和移除系统
+        void AddSystem(std::shared_ptr<System> system);
+        void RemoveSystem(std::shared_ptr<System> system);
+
+        // 更新系统
+        void Update(float deltaTime);
+
+        
+
+        // 保存和加载场景
+        bool Save(const std::string &filepath);
+        bool Load(const std::string &filepath);
+
+    private:
+        // 事件系统
+        void HandleEvent();
+
     private:
         UUID m_UUID;
         std::string m_Name;
 
-        entt::registry m_EcsRegistry;
+        entt::registry m_EcsRegistry; // ECS注册表
 
         std::unordered_map<entt::entity, std::shared_ptr<Entity>> m_EntityMap;
+        std::unordered_set<std::shared_ptr<System>> m_SystemSet;
 
         std::shared_ptr<Node> m_RootNode;
 

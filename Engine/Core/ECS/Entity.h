@@ -16,8 +16,13 @@ namespace Airwave
     class Entity : public Node
     {
     public:
-        Entity(const entt::entity &ecsEntity, Scene *scene) : m_EcsEntity(ecsEntity), m_Scene(scene) {}
+        Entity(const entt::entity &ecsEntity, std::shared_ptr<Scene> scene)
+            : m_EcsEntity(ecsEntity), m_Scene(scene) {}
+            
         ~Entity() override = default;
+
+        // 获取Entity的ECS实体
+        entt::entity GetEcsEntity() const { return m_EcsEntity; }
 
         // 添加组件
         template <typename T, typename... Args>
@@ -65,7 +70,7 @@ namespace Airwave
 
     private:
         entt::entity m_EcsEntity;
-        Scene *m_Scene;
+        std::shared_ptr<Scene> m_Scene;
     };
 
 }

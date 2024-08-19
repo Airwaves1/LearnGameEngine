@@ -55,7 +55,6 @@ namespace Airwave
                 glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGB, m_Width, m_Height, GL_TRUE);
                 glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
                 glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D_MULTISAMPLE, m_ColorAttachmentIDs[i], 0);
-                LOG_DEBUG("Color Attachment ID: {}", m_ColorAttachmentIDs[i]);
             }
             else
             {

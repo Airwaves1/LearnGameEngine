@@ -4,6 +4,7 @@
 #include "ECS/UUID.h"
 #include <string>
 #include <vector>
+#include <memory>
 
 /**
  * 用于实现一个树形结构，代表场景中的层级关系。每个Node可以有父节点和多个子节点，适用于组织和管理复杂的对象层次结构。
@@ -13,7 +14,7 @@
 
 namespace Airwave
 {
-    class Node
+    class Node : public std::enable_shared_from_this<Node>
     {
     public:
         Node();
@@ -23,21 +24,21 @@ namespace Airwave
         std::string GetName() const;
         void SetName(const std::string &name) { this->name = name; }
 
-        Node *GetParent() const { return m_Parent; }
-        void SetParent(Node *parent);
+        std::shared_ptr<Node> GetParent();
+        void SetParent( const std::shared_ptr<Node> &parent);
         bool HasParent();
 
-        const std::vector<Node *> &GetChildren() const { return m_Children; }
-        void AddChild(Node *child);
-        void RemoveChild(Node *child);
+        const std::vector<std::shared_ptr<Node>> &GetChildren() const;
+        void AddChild(const std::shared_ptr<Node>& child);
+        void RemoveChild(const std::shared_ptr<Node>& child);
         bool HasChildren();
 
     private:
         UUID m_UUID;
         std::string name{"Node"};
 
-        Node *m_Parent{nullptr};
-        std::vector<Node *> m_Children{};
+        std::weak_ptr<Node> m_Parent{};
+        std::vector<std::shared_ptr<Node>> m_Children{};
     };
 }
 
