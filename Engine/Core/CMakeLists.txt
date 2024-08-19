@@ -36,6 +36,10 @@ add_library(Core
     "ECS/Scene.cpp"
     "ECS/Entity.cpp"
 
+    "ECS/Component/ComponentSerializer.cpp"
+
+
+
 )
 
 target_link_libraries(Core PRIVATE Platform)

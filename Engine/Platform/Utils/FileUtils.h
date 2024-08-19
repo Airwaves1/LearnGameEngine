@@ -12,7 +12,7 @@
 #define ASSETS_SHADER_DIR RESOURCES_ROOT "Shader/"
 #define ASSETS_TEXTURE_DIR RESOURCES_ROOT "Texture/"
 #define ASSETS_MODEL_DIR RESOURCES_ROOT "Model/"
-
+#define ASSETS_JSON_DIR RESOURCES_ROOT "Json/"
 
 namespace Airwave
 {

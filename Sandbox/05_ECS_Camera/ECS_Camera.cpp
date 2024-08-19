@@ -2,6 +2,7 @@
 #include "Camera/Camera.h"
 #include "Camera/PerspectiveCamera.h"
 
+#include "ECS/Component/TransformComponent.h"
 #include "Geometry/GeometryUtils.h"
 #include "Renderer/RenderCommand.h"
 
@@ -18,6 +19,47 @@ public:
     ExampleLayer()
         : Layer("Example")
     {
+        Airwave::ComponentSerializer::RegisterComponentTypes();
+
+        // 创建组件
+        Airwave::TransformComponent transform;
+        transform.position = {1.0f, 2.0f, 3.0f};
+        transform.rotation = {0.0f, 0.0f, 0.0f};
+        transform.scale = {1.0f, 1.0f, 1.0f};
+
+        // 序列化组件
+        auto j = Airwave::ComponentSerializer::Serialize(transform);
+
+        // 指定保存目录和文件名
+        const std::string directory = ASSETS_JSON_DIR;
+        const std::string filename = "TransformComponent.json";
+        const std::string filepath = directory + filename;
+
+        // 确保目录存在
+        if (!std::filesystem::exists(directory))
+        {
+            if (std::filesystem::create_directories(directory))
+            {
+                std::cout << "Created directory: " << directory << std::endl;
+            }
+            else
+            {
+                std::cerr << "Failed to create directory: " << directory << std::endl;
+            }
+        }
+
+        // 保存到文件
+        std::ofstream outFile(filepath);
+        if (outFile.is_open())
+        {
+            outFile << j.dump(4); // Pretty print with an indent of 4 spaces
+            outFile.close();
+            std::cout << "Saved to file: " << filepath << std::endl;
+        }
+        else
+        {
+            std::cerr << "Failed to open file for writing.\n";
+        }
     }
 
     ~ExampleLayer()

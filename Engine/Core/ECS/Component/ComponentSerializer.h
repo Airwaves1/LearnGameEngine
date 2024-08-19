@@ -1,72 +1,59 @@
-#pragma once
+#ifndef COMPONENT_SERIALIZER_H
+#define COMPONENT_SERIALIZER_H
 
 #include "Component.h"
-#include <nlohmann/json.hpp>
+#include <functional>
 #include <unordered_map>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 namespace Airwave
 {
     class ComponentSerializer
     {
     public:
-        // 序列化组件到JSON
-        template <typename T>
-        static nlohmann::json Serialize(const T &component)
+        using SerializerFunc = std::function<void(const Component&, json&)>;
+        using DeserializerFunc = std::function<void(Component&, const json&)>;
+
+        static void RegisterComponentType(
+            const std::string& typeName,
+            SerializerFunc serializer,
+            DeserializerFunc deserializer
+        )
         {
-            nlohmann::json j;
-            // 假设每个组件都有一个名称和类型
-            j["type"] = component.GetTypeName();
-            // 调用具体组件的序列化方法
-            component.Serialize(j["data"]);
+            s_SerializerMap[typeName] = serializer;
+            s_DeserializerMap[typeName] = deserializer;
+        }
+
+        static json Serialize(const Component& component)
+        {
+            json j;
+            auto typeName = component.GetTypeName();
+            auto it = s_SerializerMap.find(typeName);
+            if (it != s_SerializerMap.end())
+            {
+                it->second(component, j);
+            }
             return j;
         }
 
-        // 从JSON反序列化组件
-        template <typename T>
-        static void Deserialize(T &component, const nlohmann::json &jsonData)
+        static void Deserialize(Component& component, const json& j)
         {
-            // 调用具体组件的反序列化方法
-            component.Deserialize(jsonData["data"]);
-        }
-
-        // 注册组件类型和对应的序列化函数
-        static void RegisterComponentType(const std::string &typeName,
-                                          std::function<void(const Component &, nlohmann::json &)> serializeFunc,
-                                          std::function<void(Component &, const nlohmann::json &)> deserializeFunc)
-        {
-            s_SerializeFunctions[typeName] = serializeFunc;
-            s_DeserializeFunctions[typeName] = deserializeFunc;
-        }
-
-        // 根据类型名称序列化组件
-        static nlohmann::json Serialize(const Component &component)
-        {
-            auto it = s_SerializeFunctions.find(component.GetTypeName());
-            if (it != s_SerializeFunctions.end())
+            auto typeName = component.GetTypeName();
+            auto it = s_DeserializerMap.find(typeName);
+            if (it != s_DeserializerMap.end())
             {
-                nlohmann::json j;
                 it->second(component, j);
-                return j;
             }
-            throw std::runtime_error("Unsupported component type");
         }
 
-        // 根据类型名称反序列化组件
-        static void Deserialize(Component &component, const nlohmann::json &jsonData)
-        {
-            auto it = s_DeserializeFunctions.find(component.GetTypeName());
-            if (it != s_DeserializeFunctions.end())
-            {
-                it->second(component, jsonData);
-            }
-            else
-            {
-                throw std::runtime_error("Unsupported component type");
-            }
-        }
+        static void RegisterComponentTypes();
 
     private:
-        static std::unordered_map<std::string, std::function<void(const Component &, nlohmann::json &)>> s_SerializeFunctions;
-        static std::unordered_map<std::string, std::function<void(Component &, const nlohmann::json &)>> s_DeserializeFunctions;
+        static std::unordered_map<std::string, SerializerFunc> s_SerializerMap;
+        static std::unordered_map<std::string, DeserializerFunc> s_DeserializerMap;
     };
 }
+
+#endif // COMPONENT_SERIALIZER_H

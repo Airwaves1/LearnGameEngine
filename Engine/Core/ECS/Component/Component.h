@@ -14,7 +14,5 @@ namespace Airwave
         virtual ~Component() = default;
 
         virtual std::string GetTypeName() const = 0;
-
-        bool NeedsSerialization = false;
     };
 }
