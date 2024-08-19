@@ -18,7 +18,7 @@ namespace Airwave
     public:
         Entity(const entt::entity &ecsEntity, std::shared_ptr<Scene> scene)
             : m_EcsEntity(ecsEntity), m_Scene(scene) {}
-            
+
         ~Entity() override = default;
 
         // 获取Entity的ECS实体

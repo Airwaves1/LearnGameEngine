@@ -26,6 +26,11 @@ namespace Airwave
         m_Parent = parent;
     }
 
+    std::shared_ptr<Node> Node::GetParent()
+    {
+        return m_Parent.lock();
+    }
+
     bool Node::HasParent()
     {
         return !m_Parent.expired();

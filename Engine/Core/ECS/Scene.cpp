@@ -80,11 +80,11 @@ namespace Airwave
         }
     }
 
-    void Scene::Update(float deltaTime)
+    void Scene::OnUpdate(float deltaTime)
     {
         for (auto &system : m_SystemSet)
         {
-            system->OnUpdate(deltaTime);
+            system->OnUpdate(deltaTime, shared_from_this());
         }
     }
 

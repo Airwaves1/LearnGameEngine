@@ -52,7 +52,10 @@ namespace Airwave
         void RemoveSystem(std::shared_ptr<System> system);
 
         // 更新系统
-        void Update(float deltaTime);
+        void OnUpdate(float deltaTime);
+
+        // 获取ECS注册表
+        entt::registry &GetEcsRegistry() { return m_EcsRegistry; }
 
         
 

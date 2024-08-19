@@ -1,23 +1,22 @@
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
-#include "ECS/UUID.h"
+#include <entt/entt.hpp>
+#include "ECS/Scene.h"
 namespace Airwave
 {
     class System
     {
     public:
         std::string GetName() const { return m_Name; }
-        virtual void OnUpdate(float deltaTime) {}
+        void SetName(const std::string &name) { m_Name = name; }
+
+        virtual void OnUpdate(float deltaTime,std::shared_ptr<Scene> scene) = 0;
 
     private:
-        std::string m_Name;
-        UUID m_UUID;
+        std::string m_Name{"System"};
     };
 
-    class RenderSystem : public System
-    {
-    };
 }
 
 #endif // !SYSTEM_H

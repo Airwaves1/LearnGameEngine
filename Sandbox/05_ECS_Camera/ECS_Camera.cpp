@@ -2,7 +2,6 @@
 #include "Camera/Camera.h"
 #include "Camera/PerspectiveCamera.h"
 
-#include "ECS/Component/TransformComponent.h"
 #include "Geometry/GeometryUtils.h"
 #include "Renderer/RenderCommand.h"
 
@@ -11,6 +10,9 @@
 #include "Utils/Log.h"
 #include "imgui.h"
 
+#include "ECS/Scene.h"
+#include "ECS/Entity.h"
+#include "ECS/Component/TransformComponent.h"
 #include "ECS/Component/ComponentSerializer.h"
 
 class ExampleLayer : public Airwave::Layer
@@ -19,40 +21,38 @@ public:
     ExampleLayer()
         : Layer("Example")
     {
-        Airwave::ComponentSerializer::RegisterComponentTypes();
+        m_Scene = std::make_shared<Airwave::Scene>("Test Scene");
 
-        // 创建组件
-        Airwave::TransformComponent transform;
-        transform.position = {1.0f, 2.0f, 3.0f};
-        transform.rotation = {0.0f, 0.0f, 0.0f};
-        transform.scale = {1.0f, 1.0f, 1.0f};
+        // 创建系统
+        auto transformSystem = std::make_shared<Airwave::TransformSystem>();
+        m_Scene->AddSystem(transformSystem);
+
+        // 创建实体
+        auto entity = m_Scene->CreateEntity("Test Entity");
+
+        // 添加 TransformComponent 组件到实体
+        auto transform = entity->AddComponent<Airwave::TransformComponent>(
+            glm::vec3(0.0f, 0.0f, 0.0f),
+            glm::vec3(0.0f, 0.0f, 0.0f),
+            glm::vec3(1.0f, 1.0f, 1.0f));
+
+        // transform.position = glm::vec3(0.0f, 0.0f, 0.0f);
+        // transform.rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+        // transform.scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
         // 序列化组件
-        auto j = Airwave::ComponentSerializer::Serialize(transform);
-
+        Airwave::ComponentSerializer::RegisterComponentTypes();      // 注册组件类型
+        auto j = Airwave::ComponentSerializer::Serialize(transform); // 序列化组件
         // 指定保存目录和文件名
         const std::string directory = ASSETS_JSON_DIR;
         const std::string filename = "TransformComponent.json";
         const std::string filepath = directory + filename;
 
-        // 确保目录存在
-        if (!std::filesystem::exists(directory))
-        {
-            if (std::filesystem::create_directories(directory))
-            {
-                std::cout << "Created directory: " << directory << std::endl;
-            }
-            else
-            {
-                std::cerr << "Failed to create directory: " << directory << std::endl;
-            }
-        }
-
         // 保存到文件
         std::ofstream outFile(filepath);
         if (outFile.is_open())
         {
-            outFile << j.dump(4); // Pretty print with an indent of 4 spaces
+            outFile << j.dump(4); // 4: 缩进空格数
             outFile.close();
             std::cout << "Saved to file: " << filepath << std::endl;
         }
@@ -132,6 +132,9 @@ public:
         m_Modle = glm::scale(m_Modle, glm::vec3(0.2f, 0.2f, 0.2f));
         m_Modle = glm::rotate(m_Modle, glm::radians(m_Rotation), glm::vec3(1.0f, 1.0f, 1.0f));
         m_Rotation += 15.0f * deltaTime;
+
+        //-----------------ECS-----------------
+        m_Scene->OnUpdate(deltaTime);
     }
 
     void OnRender() override
@@ -191,6 +194,10 @@ private:
     glm::mat4 m_Modle;
 
     float m_FPS = 0.0f;
+
+private:
+    // -------------ECS-------------
+    std::shared_ptr<Airwave::Scene> m_Scene;
 };
 
 class SandboxApp : public Airwave::Application
