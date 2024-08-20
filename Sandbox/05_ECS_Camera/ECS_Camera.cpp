@@ -29,41 +29,48 @@ public:
 
         // 创建实体
         auto entity = m_Scene->CreateEntity("Test Entity");
+        m_Entity = entity;
 
         // 添加 TransformComponent 组件到实体
         auto transform = entity->AddComponent<Airwave::TransformComponent>(
             glm::vec3(0.0f, 0.0f, 0.0f),
             glm::vec3(0.0f, 0.0f, 0.0f),
             glm::vec3(1.0f, 1.0f, 1.0f));
-
-        // transform.position = glm::vec3(0.0f, 0.0f, 0.0f);
-        // transform.rotation = glm::vec3(0.0f, 0.0f, 0.0f);
-        // transform.scale = glm::vec3(1.0f, 1.0f, 1.0f);
-
-        // 序列化组件
-        Airwave::ComponentSerializer::RegisterComponentTypes();      // 注册组件类型
-        auto j = Airwave::ComponentSerializer::Serialize(transform); // 序列化组件
-        // 指定保存目录和文件名
-        const std::string directory = ASSETS_JSON_DIR;
-        const std::string filename = "TransformComponent.json";
-        const std::string filepath = directory + filename;
-
-        // 保存到文件
-        std::ofstream outFile(filepath);
-        if (outFile.is_open())
-        {
-            outFile << j.dump(4); // 4: 缩进空格数
-            outFile.close();
-            std::cout << "Saved to file: " << filepath << std::endl;
-        }
-        else
-        {
-            std::cerr << "Failed to open file for writing.\n";
-        }
     }
 
     ~ExampleLayer()
     {
+        // 获取并序列化组件
+        if (m_Scene)
+        {
+            auto view = m_Scene->GetEcsRegistry().view<Airwave::TransformComponent>();
+            if (view.contains(m_Entity->GetEcsEntity()))
+            {
+                auto &transform = view.get<Airwave::TransformComponent>(m_Entity->GetEcsEntity());
+
+                // 序列化组件
+                Airwave::ComponentSerializer::RegisterComponentTypes(); // 注册组件类型
+
+                auto j = Airwave::ComponentSerializer::Serialize(transform); // 序列化组件
+                // 指定保存目录和文件名
+                const std::string directory = ASSETS_JSON_DIR;
+                const std::string filename = "TransformComponent.json";
+                const std::string filepath = directory + filename;
+
+                // 保存到文件
+                std::ofstream outFile(filepath);
+                if (outFile.is_open())
+                {
+                    outFile << j.dump(4); // 4: 缩进空格数
+                    outFile.close();
+                    std::cout << "Saved to file: " << filepath << std::endl;
+                }
+                else
+                {
+                    std::cerr << "Failed to open file for writing.\n";
+                }
+            }
+        }
     }
 
     void OnAttach() override
@@ -198,6 +205,7 @@ private:
 private:
     // -------------ECS-------------
     std::shared_ptr<Airwave::Scene> m_Scene;
+    std::shared_ptr<Airwave::Entity> m_Entity;
 };
 
 class SandboxApp : public Airwave::Application
